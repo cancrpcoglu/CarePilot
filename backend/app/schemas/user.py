@@ -28,4 +28,5 @@ class UserRead(UserBase):
     id: uuid.UUID
     role: UserRole
     is_active: bool
+    clinic_id: uuid.UUID | None = None
     created_at: datetime
