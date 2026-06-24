@@ -4,6 +4,14 @@
 
 > YZTA (Yapay Zeka ve Teknoloji Akademisi) Bootcamp 2026 kapsamında geliştirilmektedir.
 
+### 🟢 Canlı Demo (API)
+
+Backend Railway üzerinde canlıda:
+
+- **API:** https://carepilot-backend-production.up.railway.app
+- **Sağlık kontrolü:** [`/api/v1/health`](https://carepilot-backend-production.up.railway.app/api/v1/health)
+- **Etkileşimli API dokümantasyonu (Swagger):** [`/docs`](https://carepilot-backend-production.up.railway.app/docs)
+
 ---
 
 ## 📋 İçindekiler
@@ -205,9 +213,9 @@ ruff check .
 
 ## 🗺 Yol Haritası
 
-- [x] **Sprint 1** — Backend iskeleti, auth altyapısı, CI/CD, Railway setup
+- [x] **Sprint 1** — Backend iskeleti, auth altyapısı, veri modelleri, CI/CD, **Railway'e canlı deploy ✅**
 - [ ] **Sprint 2** — AI agent + hafıza sistemi, triage akışı, frontend temel ekranlar
-- [ ] **Sprint 3** — Klinik paneli, canlıya alma, demo hazırlığı
+- [ ] **Sprint 3** — Klinik paneli, demo hazırlığı, son optimizasyon
 
 ## 👤 Ekip
 
