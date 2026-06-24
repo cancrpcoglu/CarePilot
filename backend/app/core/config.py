@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core import constants
@@ -33,6 +33,20 @@ class Settings(BaseSettings):
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """Railway/Heroku tarzı postgres URL'lerini asyncpg sürücüsüne çevirir.
+
+        Railway, DATABASE_URL'i `postgresql://...` formatında verir; uygulamamız
+        ve Alembic async erişim için `postgresql+asyncpg://...` ister.
+        """
+        if value.startswith("postgres://"):
+            return value.replace("postgres://", "postgresql+asyncpg://", 1)
+        if value.startswith("postgresql://"):
+            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return value
 
     @property
     def is_production(self) -> bool:

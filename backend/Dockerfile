@@ -17,4 +17,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Baslangicta migration'lari uygula, sonra sunucuyu baslat.
+# Railway dinamik $PORT atar; yoksa 8000'e duser (yerel/docker-compose).
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
