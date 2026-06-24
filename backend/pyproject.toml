@@ -2,6 +2,8 @@
 target-version = "py312"
 line-length = 100
 src = ["app", "tests"]
+# Alembic'in autogenerate ile urettigi migration dosyalari elle yazilmaz, lint'e takilmaz
+exclude = ["alembic/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "W"]
