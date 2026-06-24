@@ -1,6 +1,7 @@
 """Ortak FastAPI bağımlılıkları (DI)."""
 
 import uuid
+from collections.abc import Callable
 from typing import Annotated
 
 from fastapi import Depends, status
@@ -11,7 +12,7 @@ from app.core.config import settings
 from app.core.exceptions import AppException
 from app.core.security import decode_access_token
 from app.db.session import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.repositories.user import UserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -50,3 +51,22 @@ async def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def require_role(*allowed_roles: UserRole) -> Callable[..., User]:
+    """Yalnızca belirtilen rollere izin veren bir bağımlılık üretir."""
+
+    def _checker(current_user: CurrentUser) -> User:
+        if current_user.role not in allowed_roles:
+            raise AppException(
+                "Bu işlem için yetkiniz yok.",
+                status.HTTP_403_FORBIDDEN,
+            )
+        return current_user
+
+    return _checker
+
+
+# İki panelin yetki ayrımı için hazır rol-guard'ları
+require_clinic_admin = require_role(UserRole.CLINIC_ADMIN)
+require_patient = require_role(UserRole.PATIENT)
