@@ -70,3 +70,21 @@ def require_role(*allowed_roles: UserRole) -> Callable[..., User]:
 # İki panelin yetki ayrımı için hazır rol-guard'ları
 require_clinic_admin = require_role(UserRole.CLINIC_ADMIN)
 require_patient = require_role(UserRole.PATIENT)
+
+ClinicAdmin = Annotated[User, Depends(require_clinic_admin)]
+
+
+async def get_current_clinic_id(admin: ClinicAdmin) -> uuid.UUID:
+    """Klinik yöneticisinin bağlı olduğu klinik id'sini döner.
+
+    Henüz klinik oluşturmamışsa 409 ile uyarır (önce /clinics çağrılmalı).
+    """
+    if admin.clinic_id is None:
+        raise AppException(
+            "Önce bir klinik profili oluşturmalısınız.",
+            status.HTTP_409_CONFLICT,
+        )
+    return admin.clinic_id
+
+
+CurrentClinicId = Annotated[uuid.UUID, Depends(get_current_clinic_id)]

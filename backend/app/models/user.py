@@ -1,8 +1,9 @@
 """Kullanıcı modeli — klinik yöneticisi veya hasta."""
 
 import enum
+import uuid
 
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -30,6 +31,10 @@ class User(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
         default=UserRole.PATIENT,
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    # clinic_admin rolündeki kullanıcı kendi kliniğine bağlanır (kayıt sonrası oluşturur)
+    clinic_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("clinics.id"), nullable=True, index=True
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.email} ({self.role.value})>"
