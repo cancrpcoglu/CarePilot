@@ -213,9 +213,9 @@ ruff check .
 
 ## 🗺 Yol Haritası
 
-- [x] **Sprint 1** — Backend iskeleti, auth altyapısı, veri modelleri, CI/CD, **Railway'e canlı deploy ✅**
-- [ ] **Sprint 2** — AI agent + hafıza sistemi, triage akışı, frontend temel ekranlar
-- [ ] **Sprint 3** — Klinik paneli, demo hazırlığı, son optimizasyon
+- [x] **Sprint 1** — Backend iskeleti, auth, veri modelleri, CRUD API'ler, ilk AI (Gemini) entegrasyonu, CI/CD, **Railway'e canlı deploy ✅**
+- [ ] **Sprint 2** — Çok turlu hafızalı agent (LangGraph), frontend klinik paneli (başladı), hasta arayüzü
+- [ ] **Sprint 3** — Demo hazırlığı, son optimizasyon, dokümantasyon
 
 ## 👤 Ekip
 
@@ -232,23 +232,24 @@ Detaylı ürün gereksinimleri için → [PRD.md](./PRD.md)
 
 ## 📅 Sprint Logları
 
-### Sprint 1 — Devam Ediyor
+### Sprint 1 — Tamamlandı (19 Haziran – 5 Temmuz)
 
 #### Tamamlanan User Story'ler
-- [x] Backend proje iskeletinin kurulması (clean architecture)
-- [x] Veritabanı temel modeli (User) ve soft-delete/timestamp mixin'leri
-- [x] JWT tabanlı kimlik doğrulama altyapısı (hash, token üretimi/doğrulama)
-- [x] Hata yönetimi (kullanıcıya ham hata gösterilmeyen global exception handler)
-- [x] GitHub Actions CI pipeline (lint + test)
-- [ ] Auth endpoint'leri (register/login)
-- [ ] İlk veritabanı migration'ı
-- [ ] Railway'e ilk deploy
+- [x] Backend proje iskeleti (clean architecture: router → service → repository)
+- [x] Veri modelleri: User, Clinic, Patient, Conversation, Message, TriageReport, JourneyStep (+ soft-delete/timestamp mixin'leri)
+- [x] JWT kimlik doğrulama (register / login / me) + rol-guard (clinic_admin / patient)
+- [x] Klinik / hasta / triage / yolculuk CRUD endpoint'leri (klinik scope'lu, klinikler arası izolasyon)
+- [x] **Temel AI entegrasyonu:** Gemini 2.5 Flash + LangChain structured output ile hasta mesajından yapılandırılmış triage ön değerlendirmesi
+- [x] Alembic migration'ları (3 adet, geri-alınabilir)
+- [x] Global hata yönetimi (kullanıcıya ham hata gösterilmez)
+- [x] GitHub Actions CI (lint + test) — 22 test
+- [x] Railway'e canlı deploy (backend + PostgreSQL)
 
 #### Sprint Review
-**Ne çalışıyor:** Backend; `/health` endpoint'i, JWT üretimi/doğrulaması, parola hashleme — tümü test edilmiş ve ruff lint'ten geçmiş durumda.
-**Ne çalışmıyor / eksik:** Auth endpoint'leri, frontend, AI agent entegrasyonu henüz başlamadı.
+**Ne çalışıyor:** Tüm backend canlıda. Auth, klinik/hasta yönetimi ve AI triage uçtan uca çalışıyor — gerçek Gemini çağrısıyla hasta mesajından yapılandırılmış rapor üretilip klinik onayına düşüyor. 22/22 test geçiyor, ruff temiz. Canlı: https://carepilot-backend-production.up.railway.app/docs
+**Ne çalışmıyor / eksik:** Hasta arayüzü (agent sohbeti) ve klinik panelinin bazı ekranları Sprint 2'de. AI şu an tek turlu; çok turlu hafıza Sprint 2'de gelecek.
 
 #### Sprint Retrospective
-**İyi giden:** Mimari net çizildi, her katman tek sorumluluk taşıyor; skeleton baştan test edilebilir şekilde kuruldu.
-**Geliştirilmesi gereken:** Takvime göre birkaç gün geriden başlandı, hızlanmak gerekiyor.
-**Sonraki sprint için aksiyon:** Auth endpoint'lerini ve ilk migration'ı hızlıca tamamlayıp AI agent'a geçmek.
+**İyi giden:** Planın önüne geçildi — deploy (Sprint 3 hedefiydi) ve frontend başlangıcı (Sprint 2) erken tamamlandı. Her adım testle doğrulandı.
+**Geliştirilmesi gereken:** AI katmanı tek turlu; LangGraph ile hafızalı, çok turlu agent'a geçilmeli.
+**Sonraki sprint için aksiyon:** Hafızalı agent, hasta arayüzü, klinik panelinde triage rapor detay/onay ekranları.

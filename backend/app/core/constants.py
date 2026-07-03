@@ -16,3 +16,8 @@ MAX_PASSWORD_LENGTH: int = 128
 # ----- Sayfalama (gelecekteki listeleme endpoint'leri için) -----
 DEFAULT_PAGE_SIZE: int = 20
 MAX_PAGE_SIZE: int = 100
+
+# ----- Yapay Zeka (Gemini) -----
+GEMINI_MODEL: str = "gemini-2.5-flash"
+# Triage karar veren bir agent olduğu için deterministik (0) sıcaklık kullanılır.
+TRIAGE_TEMPERATURE: float = 0.0
