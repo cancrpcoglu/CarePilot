@@ -5,12 +5,18 @@ user_id nullable'dir: klinik, hastayı sisteme henüz giriş yapmadan önce
 sonra kendi kullanıcı hesabıyla eşleştirilir.
 """
 
+import secrets
 import uuid
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin, UUIDMixin
+
+
+def generate_access_token() -> str:
+    """Hastanın chat linkine erişimi için tahmin edilemez token üretir."""
+    return secrets.token_urlsafe(24)
 
 
 class Patient(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
@@ -25,6 +31,14 @@ class Patient(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     language: Mapped[str] = mapped_column(String(10), nullable=False, default="en")
     country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    # Hastanın kimlik doğrulaması olmadan chat'e eriştiği benzersiz token
+    access_token: Mapped[str] = mapped_column(
+        String(64),
+        unique=True,
+        index=True,
+        nullable=False,
+        default=generate_access_token,
+    )
 
     def __repr__(self) -> str:
         return f"<Patient {self.full_name}>"

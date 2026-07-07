@@ -58,3 +58,27 @@ class TriageAssessment(BaseModel):
             "Bu bir tanı değil, koordinasyon amaçlı yönlendirmedir."
         ),
     )
+
+
+class TriageTurn(BaseModel):
+    """Çok turlu sohbette agent'ın tek bir tur çıktısı."""
+
+    reply: str = Field(
+        description=(
+            "Hastaya, onun yazdığı dilde verilen sohbet yanıtı. Eksik bilgi "
+            "varsa nazikçe TEK bir takip sorusu sorar."
+        )
+    )
+    is_complete: bool = Field(
+        description=(
+            "Klinik ön değerlendirmesi için yeterli bilgi toplandıysa true; "
+            "hâlâ soru sorulması gerekiyorsa false."
+        )
+    )
+    assessment: TriageAssessment | None = Field(
+        default=None,
+        description=(
+            "is_complete true olduğunda doldurulan yapılandırılmış ön "
+            "değerlendirme; aksi halde null."
+        ),
+    )
