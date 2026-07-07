@@ -128,6 +128,10 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 |---|---|
 | ![Hastalar](docs/screenshots/04-patients.png) | ![API](docs/screenshots/05-api-docs.png) |
 
+| AI ön değerlendirme (hasta detayı) | Rapor onay ekranı |
+|---|---|
+| ![AI triage](docs/screenshots/06-patient-triage.png) | ![Raporlar](docs/screenshots/07-reports.png) |
+
 ---
 
 ## 🔄 Sprint 1 — Tamamlandı (19 Haziran – 5 Temmuz)

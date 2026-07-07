@@ -27,6 +27,10 @@ function StatCard({
 export default function DashboardPage() {
   const clinic = useQuery({ queryKey: ["clinic"], queryFn: api.myClinic });
   const patients = useQuery({ queryKey: ["patients"], queryFn: api.listPatients });
+  const pendingReports = useQuery({
+    queryKey: ["reports", "pending"],
+    queryFn: () => api.listReports("pending"),
+  });
 
   if (clinic.isLoading) {
     return <Spinner label="Panel yükleniyor…" />;
@@ -46,11 +50,13 @@ export default function DashboardPage() {
       <div className="grid gap-5 sm:grid-cols-3">
         <StatCard label="Toplam hasta" value={patients.data?.length ?? "—"} />
         <StatCard label="Ülke" value={clinic.data?.country ?? "—"} />
-        <StatCard
-          label="Bekleyen ön değerlendirme"
-          value={0}
-          hint="AI agent ile gelecek (Sprint 2)"
-        />
+        <Link href="/reports">
+          <StatCard
+            label="Bekleyen ön değerlendirme"
+            value={pendingReports.data?.length ?? "—"}
+            hint="Raporları görüntüle →"
+          />
+        </Link>
       </div>
 
       <Card>

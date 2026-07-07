@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Alert, Button, Card, Input, Label, Spinner } from "@/components/ui";
@@ -129,8 +130,15 @@ export default function PatientsPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {patients.data.map((patient) => (
-                  <tr key={patient.id} className="text-slate-900">
-                    <td className="px-5 py-3 font-medium">{patient.full_name}</td>
+                  <tr key={patient.id} className="text-slate-900 hover:bg-slate-50">
+                    <td className="px-5 py-3 font-medium">
+                      <Link
+                        href={`/patients/${patient.id}`}
+                        className="text-slate-900 hover:text-teal-700"
+                      >
+                        {patient.full_name}
+                      </Link>
+                    </td>
                     <td className="px-5 py-3 text-slate-600">
                       {languageLabel(patient.language)}
                     </td>

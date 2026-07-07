@@ -1,5 +1,14 @@
 import { getToken } from "@/lib/auth";
-import type { Clinic, JourneyStep, Patient, Token, User } from "@/lib/types";
+import type {
+  Clinic,
+  JourneyStep,
+  Patient,
+  Token,
+  TriageReport,
+  TriageReportStatus,
+  TriageRunResponse,
+  User,
+} from "@/lib/types";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
@@ -87,6 +96,42 @@ export const api = {
   createPatient: (data: { full_name: string; language?: string; country?: string }) =>
     request<Patient>("/api/v1/patients", { method: "POST", body: data }),
 
+  getPatient: (patientId: string) =>
+    request<Patient>(`/api/v1/patients/${patientId}`),
+
   patientJourney: (patientId: string) =>
     request<JourneyStep[]>(`/api/v1/patients/${patientId}/journey`),
+
+  addJourneyStep: (patientId: string, stepType: string) =>
+    request<JourneyStep>(`/api/v1/patients/${patientId}/journey`, {
+      method: "POST",
+      body: { step_type: stepType },
+    }),
+
+  updateJourneyStep: (stepId: string, status: string) =>
+    request<JourneyStep>(`/api/v1/journey-steps/${stepId}`, {
+      method: "PATCH",
+      body: { status },
+    }),
+
+  runTriage: (patientId: string, message: string, language?: string) =>
+    request<TriageRunResponse>("/api/v1/agent/triage", {
+      method: "POST",
+      body: { patient_id: patientId, message, language },
+    }),
+
+  listReports: (status?: TriageReportStatus) =>
+    request<TriageReport[]>(
+      `/api/v1/triage-reports${status ? `?status=${status}` : ""}`,
+    ),
+
+  approveReport: (reportId: string) =>
+    request<TriageReport>(`/api/v1/triage-reports/${reportId}/approve`, {
+      method: "POST",
+    }),
+
+  rejectReport: (reportId: string) =>
+    request<TriageReport>(`/api/v1/triage-reports/${reportId}/reject`, {
+      method: "POST",
+    }),
 };
