@@ -36,6 +36,7 @@ CarePilot, hasta yolculuğunun başından sonuna kadar refakat eden **çok dilli
 
 ### Ürün Özellikleri
 - 🤖 **AI triage:** Hasta mesajından, Gemini 2.5 Flash + structured output ile yapılandırılmış ön değerlendirme (tedavi alanı, şikayetler, sağlık geçmişi, eksik bilgi, dil tespiti)
+- 💬 **Hafızalı hasta sohbeti:** Hasta, kendine özel bir linkten yapay zeka asistanıyla kendi dilinde çok turlu sohbet eder (LangGraph + PostgreSQL hafıza); agent yeterli bilgiyi toplayınca otomatik olarak klinik onayına ön değerlendirme raporu üretir
 - 🌍 **Çok dilli:** Hasta herhangi bir dilde yazar; agent dili tespit edip klinik için Türkçe özet üretir
 - 🏥 **Klinik paneli:** Hasta yönetimi, gelen ön değerlendirmeleri görüntüleme ve onaylama/reddetme
 - 🧠 **Hafızalı yolculuk:** Konuşma ve yolculuk adımları PostgreSQL'de kalıcı tutulur
@@ -110,7 +111,7 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 | Frontend | Next.js 16 (App Router), TypeScript, Tailwind CSS, React Query, Zod |
 | Backend | FastAPI, async SQLAlchemy, Alembic |
 | Veritabanı | PostgreSQL (+ pgvector) |
-| Yapay Zeka | Gemini 2.5 Flash, LangChain (structured output / function calling) |
+| Yapay Zeka | Gemini 2.5 Flash, LangChain + LangGraph (structured output, çok turlu hafızalı agent) |
 | Kimlik Doğrulama | JWT (PyJWT + bcrypt) |
 | Test & Lint | Pytest, ruff |
 | CI/CD | GitHub Actions |
@@ -127,6 +128,10 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 | Hasta yönetimi (çok dilli) | Canlı API dokümantasyonu |
 |---|---|
 | ![Hastalar](docs/screenshots/04-patients.png) | ![API](docs/screenshots/05-api-docs.png) |
+
+| Hasta AI sohbeti (hafızalı, çok dilli) | Hasta detayı + sohbet linki |
+|---|---|
+| ![Hasta sohbeti](docs/screenshots/09-patient-chat.png) | ![Hasta detayı](docs/screenshots/08-patient-detail.png) |
 
 | AI ön değerlendirme (hasta detayı) | Rapor onay ekranı |
 |---|---|

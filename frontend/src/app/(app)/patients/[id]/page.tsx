@@ -3,12 +3,49 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AssessmentView } from "@/components/assessment";
 import { Alert, Badge, Button, Card, Input, Spinner, Textarea } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 import type { TriageRunResponse } from "@/lib/types";
+
+function ChatLinkCard({ accessToken }: { accessToken: string }) {
+  const [link, setLink] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setLink(`${window.location.origin}/chat/${accessToken}`);
+  }, [accessToken]);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // pano erişimi yoksa sessizce geç
+    }
+  };
+
+  return (
+    <Card>
+      <h2 className="text-base font-semibold text-slate-900">
+        Hasta sohbet linki
+      </h2>
+      <p className="mt-1 text-sm text-slate-500">
+        Bu linki hastaya gönderin; hasta yapay zeka asistanıyla kendi dilinde
+        sohbet edip ön değerlendirmesini oluşturur.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <Input readOnly value={link} onFocus={(e) => e.target.select()} />
+        <Button variant="outline" onClick={copy} className="shrink-0">
+          {copied ? "Kopyalandı" : "Kopyala"}
+        </Button>
+      </div>
+    </Card>
+  );
+}
 
 function JourneySection({ patientId }: { patientId: string }) {
   const queryClient = useQueryClient();
@@ -123,6 +160,8 @@ export default function PatientDetailPage() {
           Dil: {p.language} · Ülke: {p.country ?? "—"}
         </p>
       </div>
+
+      <ChatLinkCard accessToken={p.access_token} />
 
       <Card>
         <h2 className="text-base font-semibold text-slate-900">
