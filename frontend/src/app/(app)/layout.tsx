@@ -12,6 +12,7 @@ import { clearToken, getToken } from "@/lib/auth";
 const navItems = [
   { href: "/dashboard", label: "Panel" },
   { href: "/patients", label: "Hastalar" },
+  { href: "/reports", label: "Raporlar" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

@@ -3,6 +3,7 @@ import type {
   InputHTMLAttributes,
   LabelHTMLAttributes,
   ReactNode,
+  TextareaHTMLAttributes,
 } from "react";
 
 type ButtonVariant = "primary" | "outline" | "ghost" | "danger";
@@ -36,6 +37,44 @@ export function Input({
       className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 ${className}`}
       {...props}
     />
+  );
+}
+
+export function Textarea({
+  className = "",
+  ...props
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 ${className}`}
+      {...props}
+    />
+  );
+}
+
+type BadgeTone = "neutral" | "success" | "danger" | "warning" | "info";
+
+const badgeTones: Record<BadgeTone, string> = {
+  neutral: "bg-slate-100 text-slate-700",
+  success: "bg-teal-50 text-teal-700",
+  danger: "bg-red-50 text-red-700",
+  warning: "bg-amber-50 text-amber-700",
+  info: "bg-blue-50 text-blue-700",
+};
+
+export function Badge({
+  tone = "neutral",
+  children,
+}: {
+  tone?: BadgeTone;
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeTones[tone]}`}
+    >
+      {children}
+    </span>
   );
 }
 

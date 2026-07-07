@@ -45,3 +45,35 @@ export interface JourneyStep {
   completed_at: string | null;
   created_at: string;
 }
+
+export type TreatmentArea = "hair_transplant" | "aesthetic_surgery" | "other";
+
+export interface TriageAssessment {
+  detected_language: string;
+  treatment_area: TreatmentArea;
+  summary: string;
+  primary_concerns: string[];
+  patient_expectations: string | null;
+  relevant_medical_history: string[];
+  missing_information: string[];
+  recommended_specialty: string | null;
+}
+
+export type TriageReportStatus = "pending" | "approved" | "rejected";
+
+export interface TriageReport {
+  id: string;
+  patient_id: string;
+  conversation_id: string;
+  structured_data: TriageAssessment;
+  status: TriageReportStatus;
+  reviewed_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TriageRunResponse {
+  report_id: string;
+  conversation_id: string;
+  assessment: TriageAssessment;
+}
