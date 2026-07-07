@@ -31,6 +31,7 @@ export interface Patient {
   full_name: string;
   language: string;
   country: string | null;
+  access_token: string;
   created_at: string;
 }
 
@@ -76,4 +77,24 @@ export interface TriageRunResponse {
   report_id: string;
   conversation_id: string;
   assessment: TriageAssessment;
+}
+
+export type ChatRole = "user" | "agent";
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+  created_at: string;
+}
+
+export interface ChatSession {
+  patient_name: string;
+  language: string;
+  messages: ChatMessage[];
+}
+
+export interface ChatSendResponse {
+  reply: string;
+  is_complete: boolean;
+  report_id: string | null;
 }

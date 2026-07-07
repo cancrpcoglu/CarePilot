@@ -1,5 +1,7 @@
 import { getToken } from "@/lib/auth";
 import type {
+  ChatSendResponse,
+  ChatSession,
   Clinic,
   JourneyStep,
   Patient,
@@ -133,5 +135,16 @@ export const api = {
   rejectReport: (reportId: string) =>
     request<TriageReport>(`/api/v1/triage-reports/${reportId}/reject`, {
       method: "POST",
+    }),
+
+  // Public hasta sohbeti (kimlik doğrulama yok, token tabanlı)
+  getChatSession: (accessToken: string) =>
+    request<ChatSession>(`/api/v1/public/chat/${accessToken}`, { auth: false }),
+
+  sendChatMessage: (accessToken: string, message: string) =>
+    request<ChatSendResponse>(`/api/v1/public/chat/${accessToken}`, {
+      method: "POST",
+      body: { message },
+      auth: false,
     }),
 };
