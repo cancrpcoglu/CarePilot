@@ -24,6 +24,7 @@ httpx==0.28.1
 aiosqlite==0.20.0
 ruff==0.8.4
 
-# ----- Yapay Zeka (Gemini 2.5 Flash, LangChain structured output) -----
+# ----- Yapay Zeka (Gemini 2.5 Flash, LangChain + LangGraph) -----
 langchain-core==0.3.86
 langchain-google-genai==2.0.8
+langgraph==0.2.62

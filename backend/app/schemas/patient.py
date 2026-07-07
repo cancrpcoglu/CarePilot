@@ -28,4 +28,5 @@ class PatientRead(PatientBase):
     id: uuid.UUID
     clinic_id: uuid.UUID
     user_id: uuid.UUID | None
+    access_token: str
     created_at: datetime
