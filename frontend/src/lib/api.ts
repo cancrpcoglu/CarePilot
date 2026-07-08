@@ -3,6 +3,8 @@ import type {
   ChatSendResponse,
   ChatSession,
   Clinic,
+  IntakeInfo,
+  IntakeStartResponse,
   JourneyStep,
   Patient,
   Token,
@@ -11,6 +13,13 @@ import type {
   TriageRunResponse,
   User,
 } from "@/lib/types";
+
+type PatientUpdate = {
+  full_name?: string;
+  language?: string;
+  country?: string;
+  notes?: string;
+};
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
@@ -101,6 +110,15 @@ export const api = {
   getPatient: (patientId: string) =>
     request<Patient>(`/api/v1/patients/${patientId}`),
 
+  updatePatient: (patientId: string, data: PatientUpdate) =>
+    request<Patient>(`/api/v1/patients/${patientId}`, {
+      method: "PATCH",
+      body: data,
+    }),
+
+  deletePatient: (patientId: string) =>
+    request<void>(`/api/v1/patients/${patientId}`, { method: "DELETE" }),
+
   patientJourney: (patientId: string) =>
     request<JourneyStep[]>(`/api/v1/patients/${patientId}/journey`),
 
@@ -145,6 +163,17 @@ export const api = {
     request<ChatSendResponse>(`/api/v1/public/chat/${accessToken}`, {
       method: "POST",
       body: { message },
+      auth: false,
+    }),
+
+  // Self-servis klinik ön kaydı (public)
+  getIntakeInfo: (intakeToken: string) =>
+    request<IntakeInfo>(`/api/v1/public/intake/${intakeToken}`, { auth: false }),
+
+  startIntake: (intakeToken: string, fullName: string, language?: string) =>
+    request<IntakeStartResponse>(`/api/v1/public/intake/${intakeToken}`, {
+      method: "POST",
+      body: { full_name: fullName, language },
       auth: false,
     }),
 };

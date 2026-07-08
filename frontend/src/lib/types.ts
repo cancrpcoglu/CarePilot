@@ -21,6 +21,7 @@ export interface Clinic {
   country: string | null;
   contact_email: string | null;
   contact_phone: string | null;
+  intake_token: string;
   created_at: string;
 }
 
@@ -32,7 +33,17 @@ export interface Patient {
   language: string;
   country: string | null;
   access_token: string;
+  notes: string | null;
   created_at: string;
+}
+
+export interface IntakeInfo {
+  clinic_name: string;
+}
+
+export interface IntakeStartResponse {
+  access_token: string;
+  patient_name: string;
 }
 
 export type JourneyStepStatus = "pending" | "completed" | "skipped";

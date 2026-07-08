@@ -10,6 +10,7 @@ from app.api.v1.endpoints import (
     journey_steps,
     patients,
     public_chat,
+    public_intake,
     triage_reports,
 )
 
@@ -22,3 +23,4 @@ api_router.include_router(triage_reports.router)
 api_router.include_router(journey_steps.router)
 api_router.include_router(agent.router)
 api_router.include_router(public_chat.router)
+api_router.include_router(public_intake.router)

@@ -20,6 +20,7 @@ class PatientUpdate(BaseModel):
     full_name: str | None = None
     language: str | None = None
     country: str | None = None
+    notes: str | None = None
 
 
 class PatientRead(PatientBase):
@@ -29,4 +30,5 @@ class PatientRead(PatientBase):
     clinic_id: uuid.UUID
     user_id: uuid.UUID | None
     access_token: str
+    notes: str | None
     created_at: datetime
