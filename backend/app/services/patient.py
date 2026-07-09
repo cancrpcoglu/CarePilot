@@ -50,3 +50,9 @@ class PatientService:
         await self.session.commit()
         await self.session.refresh(patient)
         return patient
+
+    async def delete(self, clinic_id: uuid.UUID, patient_id: uuid.UUID) -> None:
+        """Hastayı soft-delete eder (kayıt korunur, listelerde görünmez)."""
+        patient = await self.get_scoped(clinic_id, patient_id)
+        patient.is_deleted = True
+        await self.session.commit()

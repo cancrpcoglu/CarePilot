@@ -2,13 +2,32 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AssessmentView } from "@/components/assessment";
-import { Alert, Badge, Button, Card, Input, Spinner, Textarea } from "@/components/ui";
+import { QrCode } from "@/components/qr";
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Input,
+  Label,
+  Spinner,
+  Textarea,
+} from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
-import type { TriageRunResponse } from "@/lib/types";
+import type { Patient, TriageRunResponse } from "@/lib/types";
+
+const languages = [
+  { value: "en", label: "İngilizce" },
+  { value: "tr", label: "Türkçe" },
+  { value: "ar", label: "Arapça" },
+  { value: "de", label: "Almanca" },
+  { value: "ru", label: "Rusça" },
+  { value: "fr", label: "Fransızca" },
+];
 
 function ChatLinkCard({ accessToken }: { accessToken: string }) {
   const [link, setLink] = useState("");
@@ -42,6 +61,139 @@ function ChatLinkCard({ accessToken }: { accessToken: string }) {
         <Button variant="outline" onClick={copy} className="shrink-0">
           {copied ? "Kopyalandı" : "Kopyala"}
         </Button>
+      </div>
+      {link && (
+        <div className="mt-4 flex flex-wrap items-center gap-5">
+          <QrCode value={link} />
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(
+              `CarePilot ön değerlendirme sohbetiniz: ${link}`,
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          >
+            WhatsApp ile gönder
+          </a>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function PatientManageCard({ patient }: { patient: Patient }) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState({
+    full_name: patient.full_name,
+    language: patient.language,
+    country: patient.country ?? "",
+    notes: patient.notes ?? "",
+  });
+  const [saved, setSaved] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const update = useMutation({
+    mutationFn: () =>
+      api.updatePatient(patient.id, {
+        full_name: form.full_name,
+        language: form.language,
+        country: form.country || undefined,
+        notes: form.notes,
+      }),
+    onSuccess: async () => {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      await queryClient.invalidateQueries({ queryKey: ["patient", patient.id] });
+      await queryClient.invalidateQueries({ queryKey: ["patients"] });
+    },
+  });
+
+  const remove = useMutation({
+    mutationFn: () => api.deletePatient(patient.id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["patients"] });
+      router.replace("/patients");
+    },
+  });
+
+  return (
+    <Card>
+      <h2 className="text-base font-semibold text-slate-900">Hasta bilgileri</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+        <div>
+          <Label htmlFor="edit_name">Ad soyad</Label>
+          <Input
+            id="edit_name"
+            value={form.full_name}
+            onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="edit_lang">Dil</Label>
+          <select
+            id="edit_lang"
+            value={form.language}
+            onChange={(e) => setForm({ ...form, language: e.target.value })}
+            className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+          >
+            {languages.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label htmlFor="edit_country">Ülke</Label>
+          <Input
+            id="edit_country"
+            value={form.country}
+            onChange={(e) => setForm({ ...form, country: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <Label htmlFor="edit_notes">Notlar (kliniğe özel, hasta görmez)</Label>
+        <Textarea
+          id="edit_notes"
+          rows={3}
+          value={form.notes}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          placeholder="Bu hastaya dair notlarınız…"
+        />
+      </div>
+
+      <div className="mt-4 flex items-center gap-3">
+        <Button onClick={() => update.mutate()} disabled={update.isPending}>
+          {update.isPending ? "Kaydediliyor…" : "Kaydet"}
+        </Button>
+        {saved && <span className="text-sm text-teal-600">Kaydedildi ✓</span>}
+      </div>
+
+      <div className="mt-6 border-t border-slate-100 pt-4">
+        {!confirmDelete ? (
+          <Button variant="danger" onClick={() => setConfirmDelete(true)}>
+            Hastayı sil
+          </Button>
+        ) : (
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm text-slate-600">
+              Emin misiniz? Bu işlem geri alınamaz.
+            </span>
+            <Button
+              variant="danger"
+              onClick={() => remove.mutate()}
+              disabled={remove.isPending}
+            >
+              {remove.isPending ? "Siliniyor…" : "Evet, sil"}
+            </Button>
+            <Button variant="outline" onClick={() => setConfirmDelete(false)}>
+              Vazgeç
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );
@@ -160,6 +312,8 @@ export default function PatientDetailPage() {
           Dil: {p.language} · Ülke: {p.country ?? "—"}
         </p>
       </div>
+
+      <PatientManageCard patient={p} />
 
       <ChatLinkCard accessToken={p.access_token} />
 

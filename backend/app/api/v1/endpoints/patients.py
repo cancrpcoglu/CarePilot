@@ -56,6 +56,17 @@ async def update_patient(
     return await PatientService(session).update(clinic_id, patient_id, data)
 
 
+@router.delete(
+    "/{patient_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Hasta sil (soft delete)",
+)
+async def delete_patient(
+    patient_id: uuid.UUID, session: DbSession, clinic_id: CurrentClinicId
+) -> None:
+    await PatientService(session).delete(clinic_id, patient_id)
+
+
 @router.get(
     "/{patient_id}/journey",
     response_model=list[JourneyStepRead],

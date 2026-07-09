@@ -37,7 +37,9 @@ CarePilot, hasta yolculuğunun başından sonuna kadar refakat eden **çok dilli
 ### Ürün Özellikleri
 - 🤖 **AI triage:** Hasta mesajından, Gemini 2.5 Flash + structured output ile yapılandırılmış ön değerlendirme (tedavi alanı, şikayetler, sağlık geçmişi, eksik bilgi, dil tespiti)
 - 💬 **Hafızalı hasta sohbeti:** Hasta, kendine özel bir linkten yapay zeka asistanıyla kendi dilinde çok turlu sohbet eder (LangGraph + PostgreSQL hafıza); agent yeterli bilgiyi toplayınca otomatik olarak klinik onayına ön değerlendirme raporu üretir
+- 🔗 **Self-servis davet linki + QR:** Klinik tek bir genel link/QR paylaşır; yeni hasta kendi ön kaydını yapıp AI ile sohbet eder, panelde otomatik hasta + rapor belirir (per-hasta link de mevcut)
 - 🌍 **Çok dilli:** Hasta herhangi bir dilde yazar; agent dili tespit edip klinik için Türkçe özet üretir
+- 🗂 **Hasta yönetimi:** Klinik hastayı düzenler, özel not tutar, siler (soft delete)
 - 🏥 **Klinik paneli:** Hasta yönetimi, gelen ön değerlendirmeleri görüntüleme ve onaylama/reddetme
 - 🧠 **Hafızalı yolculuk:** Konuşma ve yolculuk adımları PostgreSQL'de kalıcı tutulur
 - 🔐 **Rol bazlı erişim:** JWT ile klinik yöneticisi ve hasta rolleri; klinikler arası veri izolasyonu
@@ -132,6 +134,10 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 | Hasta AI sohbeti (hafızalı, çok dilli) | Hasta detayı + sohbet linki |
 |---|---|
 | ![Hasta sohbeti](docs/screenshots/09-patient-chat.png) | ![Hasta detayı](docs/screenshots/08-patient-detail.png) |
+
+| Self-servis davet linki + QR (panel) | Hasta yönetimi (düzenle / not / sil) |
+|---|---|
+| ![Davet linki](docs/screenshots/10-dashboard-intake.png) | ![Hasta yönetimi](docs/screenshots/11-patient-manage.png) |
 
 | AI ön değerlendirme (hasta detayı) | Rapor onay ekranı |
 |---|---|

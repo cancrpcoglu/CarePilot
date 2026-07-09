@@ -2,9 +2,54 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { Card, Spinner } from "@/components/ui";
+import { QrCode } from "@/components/qr";
+import { Button, Card, Input, Spinner } from "@/components/ui";
 import { api } from "@/lib/api";
+
+function IntakeLinkCard({ intakeToken }: { intakeToken: string }) {
+  const [link, setLink] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setLink(`${window.location.origin}/intake/${intakeToken}`);
+  }, [intakeToken]);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // pano erişimi yoksa sessizce geç
+    }
+  };
+
+  return (
+    <Card>
+      <h2 className="text-base font-semibold text-slate-900">
+        Klinik davet linki (self-servis)
+      </h2>
+      <p className="mt-1 text-sm text-slate-500">
+        Bu tek linki web sitenize, Instagram'a veya WhatsApp durumunuza koyun.
+        Yeni hastalar buradan kendileri ön kayıt olup AI ile sohbet eder; hasta
+        ve ön değerlendirme raporu panelinizde otomatik belirir.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <Input readOnly value={link} onFocus={(e) => e.target.select()} />
+        <Button variant="outline" onClick={copy} className="shrink-0">
+          {copied ? "Kopyalandı" : "Kopyala"}
+        </Button>
+      </div>
+      {link && (
+        <div className="mt-4">
+          <QrCode value={link} />
+        </div>
+      )}
+    </Card>
+  );
+}
 
 function StatCard({
   label,
@@ -58,6 +103,8 @@ export default function DashboardPage() {
           />
         </Link>
       </div>
+
+      {clinic.data && <IntakeLinkCard intakeToken={clinic.data.intake_token} />}
 
       <Card>
         <h2 className="text-base font-semibold text-slate-900">Hızlı işlemler</h2>
