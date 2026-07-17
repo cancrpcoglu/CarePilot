@@ -21,6 +21,7 @@ from app.models.conversation import Conversation, ConversationMode
 from app.models.message import Message, MessageRole
 from app.models.patient import Patient
 from app.models.triage_report import TriageReport, TriageReportStatus
+from app.services.report_embedding import store_report_embedding
 
 
 class PublicChatService:
@@ -136,6 +137,11 @@ class PublicChatService:
             report_id = report.id
 
         await self.session.commit()
+
+        # Yeni/güncellenen rapor için embedding üret (best-effort)
+        if report_id is not None and turn.assessment is not None:
+            await store_report_embedding(self.session, report_id, turn.assessment)
+
         return turn, report_id
 
     async def _existing_report(

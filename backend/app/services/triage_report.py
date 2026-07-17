@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agent.embeddings import embed_text, format_vector_literal
 from app.core.exceptions import AppException
 from app.models.triage_report import TriageReport, TriageReportStatus
 from app.repositories.triage_report import TriageReportRepository
@@ -25,6 +26,15 @@ class TriageReportService:
     ) -> Sequence[TriageReport]:
         return await self.reports.list_by_clinic(
             clinic_id, status_filter, limit, offset
+        )
+
+    async def search(
+        self, clinic_id: uuid.UUID, query: str, limit: int
+    ) -> Sequence[TriageReport]:
+        """Doğal dil sorgusunu embedding'leyip en benzer raporları döner."""
+        vector = await embed_text(query)
+        return await self.reports.search_by_similarity(
+            clinic_id, format_vector_literal(vector), limit
         )
 
     async def get_scoped(

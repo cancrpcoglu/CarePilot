@@ -7,6 +7,7 @@ test oturumuyla override edilir. Her şey tek event loop içinde çalışır.
 
 from collections.abc import AsyncIterator
 
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -30,6 +31,17 @@ TestSessionLocal = async_sessionmaker(
 async def _override_get_db() -> AsyncIterator[AsyncSession]:
     async with TestSessionLocal() as session:
         yield session
+
+
+@pytest.fixture(autouse=True)
+def _disable_report_embedding(monkeypatch):
+    """Testlerde embedding üretimini kapatır (gerçek Gemini + pgvector gerektirir)."""
+
+    async def _noop(*args, **kwargs) -> None:
+        return None
+
+    monkeypatch.setattr("app.services.agent.store_report_embedding", _noop)
+    monkeypatch.setattr("app.services.chat.store_report_embedding", _noop)
 
 
 @pytest_asyncio.fixture

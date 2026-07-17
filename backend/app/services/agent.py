@@ -17,6 +17,7 @@ from app.models.conversation import Conversation, ConversationMode
 from app.models.message import Message, MessageRole
 from app.models.triage_report import TriageReport, TriageReportStatus
 from app.repositories.patient import PatientRepository
+from app.services.report_embedding import store_report_embedding
 
 
 class TriageAgentService:
@@ -69,4 +70,8 @@ class TriageAgentService:
         self.session.add(report)
         await self.session.commit()
         await self.session.refresh(report)
+
+        # Anlamsal arama için embedding üret (best-effort)
+        await store_report_embedding(self.session, report.id, assessment)
+
         return report, conversation, assessment
