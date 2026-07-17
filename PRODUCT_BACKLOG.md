@@ -31,8 +31,8 @@ Durum: ✅ Done · 🚧 In Progress · 📋 To Do
 | 9 | Klinik olarak hasta mesajından AI ön değerlendirme üretmek istiyorum (Gemini) | 20 | 1 | ✅ |
 | 10 | Sistem olarak AI çıktısını yapılandırılmış (structured output) almak istiyorum | 10 | 1 | ✅ |
 | 11 | Klinik olarak gelen ön değerlendirmeleri onaylamak/reddetmek istiyorum | 8 | 1 | ✅ |
-| 12 | Hasta olarak agent ile çok turlu, hafızalı sohbet etmek istiyorum | 25 | 2 | 📋 |
-| 13 | Sistem olarak konuşma hafızasını PostgreSQL'de tutmak istiyorum | 15 | 2 | 📋 |
+| 12 | Hasta olarak agent ile çok turlu, hafızalı sohbet etmek istiyorum | 25 | 2 | ✅ |
+| 13 | Sistem olarak konuşma hafızasını PostgreSQL'de tutmak istiyorum | 15 | 2 | ✅ |
 
 ## Epic 4 — Frontend
 
@@ -41,8 +41,8 @@ Durum: ✅ Done · 🚧 In Progress · 📋 To Do
 | 14 | Ziyaretçi olarak ürünü anlatan bir açılış sayfası görmek istiyorum | 8 | 1 | ✅ |
 | 15 | Klinik olarak kayıt/giriş yapıp panele erişmek istiyorum | 13 | 1 | ✅ |
 | 16 | Klinik olarak panelde hasta yönetimi yapmak istiyorum | 13 | 1 | ✅ |
-| 17 | Klinik olarak triage raporlarını panelde görüntüleyip onaylamak istiyorum | 20 | 2 | 📋 |
-| 18 | Hasta olarak kendi arayüzümden agent ile görüşmek istiyorum | 20 | 2 | 📋 |
+| 17 | Klinik olarak triage raporlarını panelde görüntüleyip onaylamak istiyorum | 20 | 2 | ✅ |
+| 18 | Hasta olarak kendi arayüzümden agent ile görüşmek istiyorum | 20 | 2 | ✅ |
 
 ## Epic 5 — DevOps & Deploy
 
@@ -50,7 +50,7 @@ Durum: ✅ Done · 🚧 In Progress · 📋 To Do
 |---|---|---|---|---|
 | 19 | Geliştirici olarak her PR'da otomatik lint+test istiyorum (CI) | 8 | 1 | ✅ |
 | 20 | Ürünü canlıya almak istiyorum (Railway + PostgreSQL) | 13 | 1 | ✅ |
-| 21 | Embedding tabanlı klinik/uzman yönlendirmesi istiyorum (pgvector) | 20 | 2 | 📋 |
+| 21 | Embedding tabanlı anlamsal rapor arama istiyorum (Gemini + pgvector) | 20 | 2 | ✅ |
 | 22 | Performans optimizasyonu ve demo hazırlığı istiyorum | 15 | 3 | 📋 |
 
 ---
@@ -60,5 +60,5 @@ Durum: ✅ Done · 🚧 In Progress · 📋 To Do
 | Sprint | Tarih | Hedef Puan | Tamamlanan | Odak |
 |---|---|---|---|---|
 | **Sprint 1** | 19 Haz – 5 Tem | 100 | ✅ 100 | Altyapı, auth, CRUD, ilk AI, deploy |
-| **Sprint 2** | 6 Tem – 19 Tem | ~100 | 🚧 | Hafızalı agent, hasta arayüzü, rapor ekranları |
-| **Sprint 3** | 20 Tem – 2 Ağu | ~100 | 📋 | Eşleştirme, optimizasyon, demo |
+| **Sprint 2** | 6 Tem – 19 Tem | ~100 | ✅ ~100 | Hafızalı agent, hasta/klinik arayüzleri, embedding arama |
+| **Sprint 3** | 20 Tem – 2 Ağu | ~100 | 📋 | Ücretsiz hosting'e göç, optimizasyon, demo |
