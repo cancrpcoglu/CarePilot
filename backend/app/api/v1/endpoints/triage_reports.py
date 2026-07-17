@@ -8,7 +8,7 @@ from fastapi import APIRouter, Query
 from app.api.deps import ClinicAdmin, CurrentClinicId, DbSession
 from app.core import constants
 from app.models.triage_report import TriageReportStatus
-from app.schemas.triage_report import TriageReportRead
+from app.schemas.triage_report import TriageReportRead, TriageSearchRequest
 from app.services.triage_report import TriageReportService
 
 router = APIRouter(prefix="/triage-reports", tags=["triage-reports"])
@@ -26,6 +26,19 @@ async def list_reports(
 ) -> list[TriageReportRead]:
     return await TriageReportService(session).list(
         clinic_id, status_filter, limit, offset
+    )
+
+
+@router.post(
+    "/search",
+    response_model=list[TriageReportRead],
+    summary="Raporlarda anlamsal (embedding) arama",
+)
+async def search_reports(
+    data: TriageSearchRequest, session: DbSession, clinic_id: CurrentClinicId
+) -> list[TriageReportRead]:
+    return await TriageReportService(session).search(
+        clinic_id, data.query, data.limit
     )
 
 

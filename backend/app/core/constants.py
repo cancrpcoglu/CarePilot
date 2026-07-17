@@ -21,3 +21,8 @@ MAX_PAGE_SIZE: int = 100
 GEMINI_MODEL: str = "gemini-2.5-flash"
 # Triage karar veren bir agent olduğu için deterministik (0) sıcaklık kullanılır.
 TRIAGE_TEMPERATURE: float = 0.0
+
+# Embedding (pgvector tabanlı anlamsal arama)
+EMBEDDING_MODEL: str = "models/gemini-embedding-001"
+EMBEDDING_DIM: int = 3072
+SEARCH_DEFAULT_LIMIT: int = 10

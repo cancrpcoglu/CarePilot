@@ -155,6 +155,12 @@ export const api = {
       method: "POST",
     }),
 
+  searchReports: (query: string, limit?: number) =>
+    request<TriageReport[]>("/api/v1/triage-reports/search", {
+      method: "POST",
+      body: { query, limit },
+    }),
+
   // Public hasta sohbeti (kimlik doğrulama yok, token tabanlı)
   getChatSession: (accessToken: string) =>
     request<ChatSession>(`/api/v1/public/chat/${accessToken}`, { auth: false }),

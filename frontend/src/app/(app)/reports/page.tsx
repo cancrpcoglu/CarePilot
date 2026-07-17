@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { AssessmentView } from "@/components/assessment";
-import { Badge, Button, Card, Spinner } from "@/components/ui";
+import { Badge, Button, Card, Input, Spinner } from "@/components/ui";
 import { api } from "@/lib/api";
 import { reportStatusLabels, reportStatusTone } from "@/lib/triage";
-import type { TriageReportStatus } from "@/lib/types";
+import type { TriageReport, TriageReportStatus } from "@/lib/types";
 
 const filters: { value: TriageReportStatus | "all"; label: string }[] = [
   { value: "all", label: "Tümü" },
@@ -19,6 +19,8 @@ const filters: { value: TriageReportStatus | "all"; label: string }[] = [
 
 export default function ReportsPage() {
   const [filter, setFilter] = useState<TriageReportStatus | "all">("pending");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState<TriageReport[] | null>(null);
   const queryClient = useQueryClient();
 
   const patients = useQuery({ queryKey: ["patients"], queryFn: api.listPatients });
@@ -30,11 +32,27 @@ export default function ReportsPage() {
   const review = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "approve" | "reject" }) =>
       action === "approve" ? api.approveReport(id) : api.rejectReport(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["reports"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      setSearchResults(null);
+    },
   });
+
+  const search = useMutation({
+    mutationFn: () => api.searchReports(searchInput.trim()),
+    onSuccess: (data) => setSearchResults(data),
+  });
+
+  const clearSearch = () => {
+    setSearchResults(null);
+    setSearchInput("");
+  };
 
   const patientName = (id: string) =>
     patients.data?.find((p) => p.id === id)?.full_name ?? "Bilinmeyen hasta";
+
+  const isSearching = searchResults !== null;
+  const displayReports = searchResults ?? reports.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -47,27 +65,69 @@ export default function ReportsPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {filters.map((f) => (
-          <button
-            key={f.value}
-            onClick={() => setFilter(f.value)}
-            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              filter === f.value
-                ? "bg-teal-600 text-white"
-                : "border border-slate-300 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+      <Card>
+        <form
+          className="flex flex-wrap gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (searchInput.trim().length >= 2) search.mutate();
+          }}
+        >
+          <Input
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Anlamsal arama — örn. “diyabetli estetik hastaları”"
+            className="flex-1"
+          />
+          <Button type="submit" disabled={search.isPending} className="shrink-0">
+            {search.isPending ? "Aranıyor…" : "Ara"}
+          </Button>
+          {isSearching && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={clearSearch}
+              className="shrink-0"
+            >
+              Temizle
+            </Button>
+          )}
+        </form>
+        <p className="mt-2 text-xs text-slate-400">
+          Yapay zeka, anlam benzerliğine göre en alakalı raporları getirir
+          (embedding tabanlı — pgvector).
+        </p>
+      </Card>
 
-      {reports.isLoading ? (
+      {!isSearching && (
+        <div className="flex flex-wrap gap-2">
+          {filters.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                filter === f.value
+                  ? "bg-teal-600 text-white"
+                  : "border border-slate-300 text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {isSearching && (
+        <p className="text-sm text-slate-500">
+          “{searchInput}” için {displayReports.length} sonuç (en alakalı önce)
+        </p>
+      )}
+
+      {!isSearching && reports.isLoading ? (
         <Spinner label="Raporlar yükleniyor…" />
-      ) : reports.data && reports.data.length > 0 ? (
+      ) : displayReports.length > 0 ? (
         <div className="space-y-4">
-          {reports.data.map((report) => (
+          {displayReports.map((report) => (
             <Card key={report.id}>
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -112,9 +172,9 @@ export default function ReportsPage() {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center text-sm text-slate-500">
-          Bu filtrede rapor yok. Bir hastanın detay sayfasından
-          <span className="font-medium"> “AI ön değerlendirme çalıştır” </span>
-          ile rapor oluşturabilirsiniz.
+          {isSearching
+            ? "Bu arama için sonuç bulunamadı."
+            : "Bu filtrede rapor yok. Bir hastanın detay sayfasından “AI ön değerlendirme çalıştır” ile rapor oluşturabilirsiniz."}
         </div>
       )}
     </div>
