@@ -1,0 +1,39 @@
+# Render Blueprint — CarePilot'u ücretsiz tier'da canlıya alır.
+# Veritabanı için Neon (ücretsiz, pgvector destekli) kullanılır; DATABASE_URL
+# manuel girilir. Kullanım: Render'da New > Blueprint > bu repo'yu seçin.
+# Ayrıntılar için DEPLOYMENT.md'ye bakın.
+
+services:
+  # ---- Backend (FastAPI, Docker) ----
+  - type: web
+    name: carepilot-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false # Neon connection string (elle gir)
+      - key: GEMINI_API_KEY
+        sync: false # Google AI Studio key (elle gir)
+      - key: BACKEND_CORS_ORIGINS
+        sync: false # frontend URL'i, JSON dizi: ["https://carepilot-frontend.onrender.com"]
+
+  # ---- Frontend (Next.js, Node) ----
+  - type: web
+    name: carepilot-frontend
+    runtime: node
+    rootDir: frontend
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false # backend URL'i (elle gir): https://carepilot-backend.onrender.com
