@@ -4,11 +4,15 @@
 
 > YZTA (Yapay Zeka ve Teknoloji Akademisi) Bootcamp 2026 — **Grup 153**
 
-[![Canlı API](https://img.shields.io/badge/Canl%C4%B1_API-Railway-0B0D0E?logo=railway)](https://carepilot-backend-production.up.railway.app/api/v1/health)
-[![Swagger](https://img.shields.io/badge/API_Docs-Swagger-85EA2D?logo=swagger&logoColor=black)](https://carepilot-backend-production.up.railway.app/docs)
+[![Canlı Panel](https://img.shields.io/badge/Canl%C4%B1_Panel-Render-46E3B7?logo=render&logoColor=white)](https://carepilot-frontend.onrender.com)
+[![Canlı API](https://img.shields.io/badge/Canl%C4%B1_API-Render-46E3B7?logo=render&logoColor=white)](https://carepilot-backend-0xxe.onrender.com/api/v1/health)
+[![Swagger](https://img.shields.io/badge/API_Docs-Swagger-85EA2D?logo=swagger&logoColor=black)](https://carepilot-backend-0xxe.onrender.com/docs)
 
-- **Canlı API:** https://carepilot-backend-production.up.railway.app
-- **Etkileşimli API dokümantasyonu:** https://carepilot-backend-production.up.railway.app/docs
+- **Canlı Panel:** https://carepilot-frontend.onrender.com
+- **Canlı API:** https://carepilot-backend-0xxe.onrender.com
+- **Etkileşimli API dokümantasyonu:** https://carepilot-backend-0xxe.onrender.com/docs
+
+> Deploy ücretsiz katmanda (Render + Neon) çalışır; servisler bir süre hareketsiz kalınca uyur, ilk istekte ~1 dk soğuk başlangıç olabilir.
 
 ---
 
@@ -38,10 +42,14 @@ CarePilot, hasta yolculuğunun başından sonuna kadar refakat eden **çok dilli
 - 🤖 **AI triage:** Hasta mesajından, Gemini 2.5 Flash + structured output ile yapılandırılmış ön değerlendirme (tedavi alanı, şikayetler, sağlık geçmişi, eksik bilgi, dil tespiti)
 - 💬 **Hafızalı hasta sohbeti:** Hasta, kendine özel bir linkten yapay zeka asistanıyla kendi dilinde çok turlu sohbet eder (LangGraph + PostgreSQL hafıza); agent yeterli bilgiyi toplayınca otomatik olarak klinik onayına ön değerlendirme raporu üretir
 - 🔗 **Self-servis davet linki + QR:** Klinik tek bir genel link/QR paylaşır; yeni hasta kendi ön kaydını yapıp AI ile sohbet eder, panelde otomatik hasta + rapor belirir (per-hasta link de mevcut)
+- 📞 **İletişim yakalama + tek tık ulaşım:** Hasta ön kayıtta telefon/WhatsApp (zorunlu) ve e-posta bırakır; klinik hasta detayından ve rapor kartından **tek tıkla WhatsApp / Ara / E-posta** ile ulaşır — orphan rapor yerine iletişim bilgili nitelikli lead
+- 🔒 **KVKK açık rıza:** Ön kayıtta hastadan verilerinin işlenmesi için açık rıza alınır ve zaman damgasıyla saklanır (panelde rozetle görünür)
 - 🌍 **Çok dilli:** Hasta herhangi bir dilde yazar; agent dili tespit edip klinik için Türkçe özet üretir
 - 🗂 **Hasta yönetimi:** Klinik hastayı düzenler, özel not tutar, siler (soft delete)
 - 🔎 **Anlamsal rapor arama:** Klinik doğal dille arar (örn. "diyabetli estetik hastaları"); en alakalı raporlar Gemini embedding + pgvector kosinüs benzerliğiyle sıralanır
 - 🏥 **Klinik paneli:** Hasta yönetimi, gelen ön değerlendirmeleri görüntüleme ve onaylama/reddetme
+- 📊 **Dönüşüm hunisi:** Panelde ön kayıt → ön değerlendirme üretildi → onaylandı dönüşüm oranları
+- ⚙️ **Hesap yönetimi:** Ayarlar sayfasından klinik bilgisi görüntüleme ve kliniği güvenli onayla silme (soft delete; hastalar da cascade silinir)
 - 🧠 **Hafızalı yolculuk:** Konuşma ve yolculuk adımları PostgreSQL'de kalıcı tutulur
 - 🔐 **Rol bazlı erişim:** JWT ile klinik yöneticisi ve hasta rolleri; klinikler arası veri izolasyonu
 
@@ -58,18 +66,20 @@ Backlog ve sprint takibi bu repoda [**PRODUCT_BACKLOG.md**](./PRODUCT_BACKLOG.md
 
 ```mermaid
 flowchart TB
-    subgraph client["İstemci"]
-      FE["Next.js Frontend<br/>Klinik Paneli"]
+    subgraph render_fe["Render (Canlı)"]
+      FE["Next.js Frontend<br/>Klinik Paneli + Hasta Chat"]
     end
-    subgraph railway["Railway (Canlı)"]
+    subgraph render_be["Render (Canlı)"]
       BE["FastAPI Backend<br/>router → service → repository"]
-      DB[("PostgreSQL")]
     end
-    AI["Gemini 2.5 Flash<br/>LangChain structured output"]
+    subgraph neon["Neon (Canlı)"]
+      DB[("PostgreSQL<br/>+ pgvector")]
+    end
+    AI["Gemini 2.5 Flash + embedding<br/>LangChain / LangGraph"]
 
     FE -->|"REST + JWT"| BE
     BE --> DB
-    BE -->|"triage (function calling)"| AI
+    BE -->|"triage + chat + embedding"| AI
 ```
 
 **Triage akışı (AI ön değerlendirme → klinik onayı):**
@@ -116,9 +126,9 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 | Veritabanı | PostgreSQL (+ pgvector) |
 | Yapay Zeka | Gemini 2.5 Flash, LangChain + LangGraph (structured output, çok turlu hafızalı agent), gemini-embedding-001 + pgvector (anlamsal arama) |
 | Kimlik Doğrulama | JWT (PyJWT + bcrypt) |
-| Test & Lint | Pytest, ruff |
+| Test & Lint | Pytest (38 test), ruff |
 | CI/CD | GitHub Actions |
-| Deploy | Railway (backend + PostgreSQL) |
+| Deploy | Render (backend Docker + frontend Node) · Neon (PostgreSQL + pgvector) — tümü ücretsiz katman |
 
 ---
 
@@ -140,9 +150,17 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 |---|---|
 | ![Davet linki](docs/screenshots/10-dashboard-intake.png) | ![Hasta yönetimi](docs/screenshots/11-patient-manage.png) |
 
-| AI ön değerlendirme (hasta detayı) | Rapor onay ekranı |
+| AI ön değerlendirme (hasta detayı) | Rapor onay ekranı + tek tık iletişim |
 |---|---|
 | ![AI triage](docs/screenshots/06-patient-triage.png) | ![Raporlar](docs/screenshots/07-reports.png) |
+
+| Dönüşüm hunisi (panel) | KVKK rıza + iletişim yakalama (ön kayıt) |
+|---|---|
+| ![Dönüşüm hunisi](docs/screenshots/13-dashboard-funnel.png) | ![KVKK rıza](docs/screenshots/14-intake-consent.png) |
+
+| Tek tık iletişim + KVKK rozeti (hasta detayı) | Klinik silme — Tehlikeli bölge (Ayarlar) |
+|---|---|
+| ![İletişim aksiyonları](docs/screenshots/15-patient-contact.png) | ![Ayarlar tehlikeli bölge](docs/screenshots/16-settings-danger.png) |
 
 ---
 
@@ -228,35 +246,41 @@ Yukarıdaki [Ekran Görüntüleri](#-ürün-durumu-ekran-görüntüleri) bölüm
 ## 🔄 Sprint 3 — Tamamlandı (20 Temmuz – 2 Ağustos)
 
 ### Sprint Notları
-Bu sprintte ürün **canlıya alınabilir** hale getirildi; dokümantasyon ve demo hazırlığı tamamlandı. Proje Sprint 1'de Railway'de canlıya alınmıştı (ekran görüntüleri mevcut); Railway ücretsiz trial'ı dolunca, **tamamen ücretsiz ve sürdürülebilir bir yığına** (Neon + Render, pgvector destekli) tek adımda deploy edilebilecek şekilde yapılandırıldı — bkz. [render.yaml](./render.yaml) ve [DEPLOYMENT.md](./DEPLOYMENT.md).
+Bu sprintte ürün **tamamen ücretsiz bir yığına canlıya alındı** ve sağlık turizmi akışını olgunlaştıran özelliklerle tamamlandı. Railway ücretsiz trial'ı dolunca hosting **Neon (PostgreSQL + pgvector 0.8.1) + Render (backend Docker + frontend Node)** yığınına taşındı — geçiş kod değişikliği gerektirmedi (`config.py`, `DATABASE_URL`'i asyncpg + SSL'e otomatik normalize eder). Ardından şu özellikler eklendi: **hasta iletişim yakalama + tek tık ulaşım, KVKK açık rıza, hasta tamamlama ekranı, dashboard dönüşüm hunisi ve klinik hesabı silme.**
+
+Canlı: **[Panel](https://carepilot-frontend.onrender.com)** · **[API / Swagger](https://carepilot-backend-0xxe.onrender.com/docs)**
 
 - **Sprint içinde tamamlanması tahmin edilen puan:** ~100
-- **Puan tamamlama mantığı:** Backlog'un son dilimi — canlıya alınabilirlik, performans gözden geçirme, demo ve dokümantasyon.
+- **Puan tamamlama mantığı:** Backlog'un son dilimi — canlıya alma, hasta akışı olgunlaştırma (iletişim/KVKK/huni), hesap yönetimi, performans, demo ve dokümantasyon.
 
 ### Daily Scrum
-Solo geliştirici; ilerleme conventional commit geçmişi ve sprint logları üzerinden takip edildi.
+Solo geliştirici; ilerleme conventional commit geçmişi ve sprint logları üzerinden takip edildi. Her özellik ayrı bir PR olarak açılıp gözden geçirilerek merge edildi.
 
 ### Sprint Board
 | ✅ Done | 📋 Kullanıcı adımı |
 |---|---|
-| Ücretsiz deploy config'i (Render Blueprint + Neon, pgvector) | Ücretsiz hesap açıp canlıya alma |
-| Deployment rehberi ([DEPLOYMENT.md](./DEPLOYMENT.md)) | Demo videosunun kaydı |
-| 3 dakikalık demo senaryosu ([DEMO_SCRIPT.md](./DEMO_SCRIPT.md)) | |
-| Performans gözden geçirme (async I/O, connection pooling, FK indeksleri, prod build) | |
-| Dokümantasyon (README, PRD, backlog, mimari + ER diyagramları) | |
+| **Neon + Render'e canlı deploy** (pgvector 0.8.1) — [render.yaml](./render.yaml) + [DEPLOYMENT.md](./DEPLOYMENT.md) | 3 dakikalık demo videosunun kaydı |
+| **Hasta iletişim yakalama** (telefon/WhatsApp/e-posta) + tek tık WhatsApp/Ara/E-posta | |
+| **KVKK açık rıza** (zorunlu onay + `consent_at` damgası + panel rozeti) | |
+| **Hasta tamamlama ekranı** (`is_complete` kalıcı; sohbet bitince net kapanış) | |
+| **Dashboard dönüşüm hunisi** (ön kayıt → rapor → onay) | |
+| **Klinik silme** (soft-delete + hastaları cascade + onay güvenliği) | |
+| Performans (async I/O, connection pooling, FK indeksleri, prod build) | |
+| 3 dk demo senaryosu ([DEMO_SCRIPT.md](./DEMO_SCRIPT.md)) + dokümantasyon | |
+| **38/38 test** geçti · ruff temiz · CI yeşil | |
 
 ### Ürün Durumu
-Ürün Sprint 1'de Railway'de canlıydı (bkz. [Ekran Görüntüleri](#-ürün-durumu-ekran-görüntüleri)). Şu an tek rehberle ([DEPLOYMENT.md](./DEPLOYMENT.md)) tekrar canlıya alınabilir ve yerelde tam çalışır durumdadır.
+Ürün **canlıda ve uçtan uca doğrulandı** (Render + Neon): giriş, self-servis ön kayıt (KVKK rıza + iletişim yakalama), hafızalı çok dilli AI sohbet, tamamlama ekranı, rapor onayı, anlamsal arama, dönüşüm hunisi ve klinik silme çalışıyor. Demo klinik ve 6 çok uluslu hasta (Türkiye/İngiltere/Almanya/BAE) seed'lendi. Güncel ekranlar için yukarıdaki [Ekran Görüntüleri](#-ürün-durumu-ekran-görüntüleri) bölümüne bakınız.
 
 ### Sprint Review
-**Ne çalışıyor:** Ürünün tamamı (klinik paneli + hasta chat + hafızalı AI agent + embedding arama) uçtan uca çalışıyor. Ücretsiz yığına deploy config'i ve rehberi hazır; jüri kriteri olan "canlıya alınmış **veya alınabilecek**" karşılanıyor. 34/34 test, ruff temiz, CI yeşil.
+**Ne çalışıyor:** Ürünün tamamı canlıda uçtan uca çalışıyor. Hasta kendi dilinde AI ile sohbet edip KVKK onayı ve iletişim bilgisiyle ön kayıt yapıyor; agent zorunlu bilgileri toplayınca yapılandırılmış rapor üretiyor; klinik raporu onaylayıp **tek tıkla WhatsApp/telefon/e-posta** ile hastaya ulaşıyor; anlamsal arama ve dönüşüm hunisi panelde çalışıyor. Jüri kriteri olan "canlıya alınmış" **fazlasıyla karşılanıyor — yalnızca alınabilir değil, çalışan bir link mevcut.** 38/38 test, ruff temiz, CI yeşil.
 
 **Sprint Review katılımcıları:** Can Çorapçıoğlu (geliştirici).
 
 ### Sprint Retrospective
-- **İyi giden:** Platformdan bağımsız mimari sayesinde hosting geçişi kod değişikliği gerektirmedi (`config.py` DATABASE_URL'i otomatik normalize eder). Kapsamlı dokümantasyon ve demo hazırlığı yapıldı.
-- **Geliştirilmesi gereken:** Ücretsiz hosting'lerin uyku/kaynak sınırları demo öncesi "uyandırma" gerektiriyor.
-- **Sonuç:** Proje bootcamp teslimine hazır — çalışan, dokümante edilmiş, canlıya alınabilir bir ürün.
+- **İyi giden:** Platformdan bağımsız mimari sayesinde hosting göçü kod değişikliği gerektirmedi; ürün canlıda uçtan uca doğrulandı. Sprint kapsamının ötesine geçilerek iletişim yakalama, KVKK rıza, dönüşüm hunisi ve klinik silme de eklendi.
+- **Geliştirilmesi gereken:** Ücretsiz katmanın (Render) uyku/soğuk başlangıç sınırı demo öncesi "uyandırma" gerektiriyor.
+- **Sonuç:** Proje bootcamp teslimine hazır — **canlı**, dokümante edilmiş, test edilmiş (38/38) bir ürün.
 
 ---
 
