@@ -150,3 +150,57 @@ async def test_journey_step_flow(client: AsyncClient) -> None:
 async def test_clinic_endpoints_require_authentication(client: AsyncClient) -> None:
     response = await client.get("/api/v1/clinics/me")
     assert response.status_code == 401
+
+
+async def test_delete_clinic_soft_deletes_and_detaches(client: AsyncClient) -> None:
+    token = await _token(client, "sil1@gmail.com")
+    await _create_clinic(client, token, "Silinecek Klinik")
+    await client.post(
+        "/api/v1/patients", json={"full_name": "Hasta"}, headers=_headers(token)
+    )
+
+    # Kliniği sil
+    deleted = await client.delete("/api/v1/clinics/me", headers=_headers(token))
+    assert deleted.status_code == 204
+
+    # Klinik bağı koptu → /clinics/me artık 409 (yeni klinik gerekir)
+    me_clinic = await client.get("/api/v1/clinics/me", headers=_headers(token))
+    assert me_clinic.status_code == 409
+
+    # Kullanıcı hâlâ geçerli ama clinic_id null
+    me = await client.get("/api/v1/auth/me", headers=_headers(token))
+    assert me.status_code == 200
+    assert me.json()["clinic_id"] is None
+
+    # Yönetici dilerse yeni bir klinik oluşturabilir (onboarding)
+    again = await client.post(
+        "/api/v1/clinics", json={"name": "Yeni Klinik"}, headers=_headers(token)
+    )
+    assert again.status_code == 201
+    # Yeni klinik boş: eski hastalar (soft-deleted) taşınmaz
+    listing = await client.get("/api/v1/patients", headers=_headers(token))
+    assert listing.json() == []
+
+
+async def test_delete_clinic_does_not_touch_other_clinic(client: AsyncClient) -> None:
+    token_a = await _token(client, "silA@gmail.com")
+    await _create_clinic(client, token_a, "Klinik A")
+    await client.post(
+        "/api/v1/patients", json={"full_name": "A Hasta"}, headers=_headers(token_a)
+    )
+
+    token_b = await _token(client, "silB@gmail.com")
+    await _create_clinic(client, token_b, "Klinik B")
+    await client.post(
+        "/api/v1/patients", json={"full_name": "B Hasta"}, headers=_headers(token_b)
+    )
+
+    # A kliniğini sil
+    await client.delete("/api/v1/clinics/me", headers=_headers(token_a))
+
+    # B kliniği ve hastası etkilenmemeli
+    b_clinic = await client.get("/api/v1/clinics/me", headers=_headers(token_b))
+    assert b_clinic.status_code == 200
+    b_list = await client.get("/api/v1/patients", headers=_headers(token_b))
+    assert len(b_list.json()) == 1
+    assert b_list.json()[0]["full_name"] == "B Hasta"

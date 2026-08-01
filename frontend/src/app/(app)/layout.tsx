@@ -13,6 +13,7 @@ const navItems = [
   { href: "/dashboard", label: "Panel" },
   { href: "/patients", label: "Hastalar" },
   { href: "/reports", label: "Raporlar" },
+  { href: "/settings", label: "Ayarlar" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

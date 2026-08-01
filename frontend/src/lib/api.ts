@@ -104,6 +104,9 @@ export const api = {
 
   myClinic: () => request<Clinic>("/api/v1/clinics/me"),
 
+  deleteClinic: () =>
+    request<void>("/api/v1/clinics/me", { method: "DELETE" }),
+
   listPatients: () => request<Patient[]>("/api/v1/patients"),
 
   createPatient: (data: {

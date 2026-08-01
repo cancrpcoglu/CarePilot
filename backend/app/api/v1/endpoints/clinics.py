@@ -31,3 +31,14 @@ async def update_my_clinic(
     data: ClinicUpdate, session: DbSession, clinic_id: CurrentClinicId
 ) -> ClinicRead:
     return await ClinicService(session).update(clinic_id, data)
+
+
+@router.delete(
+    "/me",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Kendi kliniğimi sil (klinik + hastalar soft-delete)",
+)
+async def delete_my_clinic(
+    session: DbSession, admin: ClinicAdmin, clinic_id: CurrentClinicId
+) -> None:
+    await ClinicService(session).delete(clinic_id, admin)
