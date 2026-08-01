@@ -337,6 +337,11 @@ export default function PatientDetailPage() {
           Dil: {p.language} · Ülke: {p.country ?? "—"} · Telefon: {p.phone ?? "—"}
           {p.email ? ` · ${p.email}` : ""}
         </p>
+        {p.consent_at && (
+          <p className="mt-1 text-xs text-emerald-600">
+            ✓ KVKK açık rıza alındı · {new Date(p.consent_at).toLocaleString("tr-TR")}
+          </p>
+        )}
         {(p.phone || p.email) && (
           <ContactActions phone={p.phone} email={p.email} className="mt-3" />
         )}

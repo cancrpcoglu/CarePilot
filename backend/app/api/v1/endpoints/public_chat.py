@@ -17,10 +17,11 @@ router = APIRouter(prefix="/public/chat", tags=["public-chat"])
 @router.get("/{access_token}", response_model=ChatSessionRead)
 async def get_chat_session(access_token: str, session: DbSession) -> ChatSessionRead:
     service = PublicChatService(session)
-    patient, messages = await service.get_session(access_token)
+    patient, messages, is_complete = await service.get_session(access_token)
     return ChatSessionRead(
         patient_name=patient.full_name,
         language=patient.language,
+        is_complete=is_complete,
         messages=[
             ChatMessageRead(
                 role=message.role.value,

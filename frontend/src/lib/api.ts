@@ -185,7 +185,13 @@ export const api = {
 
   startIntake: (
     intakeToken: string,
-    data: { full_name: string; phone: string; email?: string; language?: string },
+    data: {
+      full_name: string;
+      phone: string;
+      email?: string;
+      language?: string;
+      consent: boolean;
+    },
   ) =>
     request<IntakeStartResponse>(`/api/v1/public/intake/${intakeToken}`, {
       method: "POST",

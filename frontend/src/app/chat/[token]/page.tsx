@@ -27,6 +27,8 @@ export default function PatientChatPage() {
   useEffect(() => {
     if (session.data && !seeded) {
       setMessages(session.data.messages);
+      // Rapor üretilmişse tamamlanma durumu sayfa yenilense de korunur
+      if (session.data.is_complete) setCompleted(true);
       setSeeded(true);
     }
   }, [session.data, seeded]);
@@ -130,9 +132,18 @@ export default function PatientChatPage() {
         )}
 
         {completed && (
-          <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-800">
-            Thank you! Your information has been sent to the clinic team. They
-            will review it and contact you soon.
+          <div className="rounded-xl border border-teal-200 bg-teal-50 p-5 text-center">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-lg text-white">
+              ✓
+            </div>
+            <p className="mt-3 text-base font-semibold text-teal-900">
+              Your pre-assessment is complete
+            </p>
+            <p className="mt-1 text-sm text-teal-800">
+              Thank you! Your information has been sent to the clinic team. They
+              will review it and get back to you soon using the contact details
+              you provided.
+            </p>
           </div>
         )}
 
@@ -140,24 +151,30 @@ export default function PatientChatPage() {
       </div>
 
       <div className="border-t border-slate-200 bg-white px-5 py-4">
-        <div className="flex gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend();
-            }}
-            placeholder="Type your message…"
-            className="flex-1 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
-          />
-          <button
-            onClick={handleSend}
-            disabled={send.isPending || !input.trim()}
-            className="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Send
-          </button>
-        </div>
+        {completed ? (
+          <p className="text-center text-sm text-slate-400">
+            This conversation is complete — you can close this page.
+          </p>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSend();
+              }}
+              placeholder="Type your message…"
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+            />
+            <button
+              onClick={handleSend}
+              disabled={send.isPending || !input.trim()}
+              className="rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Send
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ Klinik tek bir davet token'ı paylaşır; yeni hasta bu token ile kendi kaydın�
 oluşturur ve chat için bir access_token alır. Klinik önceden hasta oluşturmaz.
 """
 
+from datetime import UTC, datetime
+
 from fastapi import status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,12 +43,14 @@ class IntakeService:
         language: str | None,
     ) -> Patient:
         clinic = await self._get_clinic(intake_token)
+        # Bu noktaya gelindiyse şema doğrulaması rızayı garanti etti.
         patient = Patient(
             clinic_id=clinic.id,
             full_name=full_name,
             phone=phone,
             email=email,
             language=language or "en",
+            consent_at=datetime.now(UTC),
         )
         self.session.add(patient)
         await self.session.flush()

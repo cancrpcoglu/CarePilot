@@ -15,6 +15,7 @@ class ChatMessageRead(BaseModel):
 class ChatSessionRead(BaseModel):
     patient_name: str
     language: str
+    is_complete: bool
     messages: list[ChatMessageRead]
 
 
