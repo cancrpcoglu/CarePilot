@@ -3,13 +3,15 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class PatientBase(BaseModel):
     full_name: str
     language: str = "en"
     country: str | None = None
+    phone: str | None = None
+    email: EmailStr | None = None
 
 
 class PatientCreate(PatientBase):
@@ -20,6 +22,8 @@ class PatientUpdate(BaseModel):
     full_name: str | None = None
     language: str | None = None
     country: str | None = None
+    phone: str | None = None
+    email: EmailStr | None = None
     notes: str | None = None
 
 

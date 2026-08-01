@@ -24,7 +24,7 @@ async def start_intake(
     intake_token: str, data: IntakeStartRequest, session: DbSession
 ) -> IntakeStartResponse:
     patient = await IntakeService(session).start(
-        intake_token, data.full_name, data.language
+        intake_token, data.full_name, data.phone, data.email, data.language
     )
     return IntakeStartResponse(
         access_token=patient.access_token, patient_name=patient.full_name

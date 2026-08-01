@@ -31,6 +31,9 @@ class Patient(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     language: Mapped[str] = mapped_column(String(10), nullable=False, default="en")
     country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    # Klinik hastaya buradan ulaşır (self-servis kayıtta telefon zorunlu alınır)
+    phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     # Hastanın kimlik doğrulaması olmadan chat'e eriştiği benzersiz token
     access_token: Mapped[str] = mapped_column(
         String(64),

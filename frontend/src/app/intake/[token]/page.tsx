@@ -13,6 +13,8 @@ export default function IntakePage() {
   const token = params.token as string;
 
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const info = useQuery({
@@ -22,7 +24,12 @@ export default function IntakePage() {
   });
 
   const start = useMutation({
-    mutationFn: () => api.startIntake(token, name.trim()),
+    mutationFn: () =>
+      api.startIntake(token, {
+        full_name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || undefined,
+      }),
     onSuccess: (data) => router.replace(`/chat/${data.access_token}`),
     onError: (err) =>
       setError(err instanceof ApiError ? err.message : "Something went wrong."),
@@ -73,6 +80,10 @@ export default function IntakePage() {
                 setError("Please enter your name.");
                 return;
               }
+              if (phone.trim().length < 5) {
+                setError("Please enter a phone number where the clinic can reach you.");
+                return;
+              }
               start.mutate();
             }}
           >
@@ -83,6 +94,31 @@ export default function IntakePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your full name"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone / WhatsApp</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+90 555 123 45 67"
+              />
+              <p className="mt-1 text-xs text-slate-400">
+                The clinic will use this to get back to you about your assessment.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email (optional)</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
               />
             </div>
 

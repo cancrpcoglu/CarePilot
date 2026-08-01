@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { AssessmentView } from "@/components/assessment";
+import { ContactActions } from "@/components/contact";
 import { Badge, Button, Card, Input, Spinner } from "@/components/ui";
 import { api } from "@/lib/api";
 import { reportStatusLabels, reportStatusTone } from "@/lib/triage";
@@ -48,8 +49,9 @@ export default function ReportsPage() {
     setSearchInput("");
   };
 
+  const patientOf = (id: string) => patients.data?.find((p) => p.id === id);
   const patientName = (id: string) =>
-    patients.data?.find((p) => p.id === id)?.full_name ?? "Bilinmeyen hasta";
+    patientOf(id)?.full_name ?? "Bilinmeyen hasta";
 
   const isSearching = searchResults !== null;
   const displayReports = searchResults ?? reports.data ?? [];
@@ -145,6 +147,11 @@ export default function ReportsPage() {
                   <p className="mt-1 text-xs text-slate-400">
                     {new Date(report.created_at).toLocaleString("tr-TR")}
                   </p>
+                  <ContactActions
+                    phone={patientOf(report.patient_id)?.phone}
+                    email={patientOf(report.patient_id)?.email}
+                    className="mt-2"
+                  />
                 </div>
                 {report.status === "pending" && (
                   <div className="flex shrink-0 gap-2">
