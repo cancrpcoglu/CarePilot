@@ -21,7 +21,13 @@ const languageLabel = (value: string) =>
 
 export default function PatientsPage() {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ full_name: "", language: "en", country: "" });
+  const [form, setForm] = useState({
+    full_name: "",
+    language: "en",
+    country: "",
+    phone: "",
+    email: "",
+  });
   const [error, setError] = useState<string | null>(null);
 
   const patients = useQuery({ queryKey: ["patients"], queryFn: api.listPatients });
@@ -32,9 +38,11 @@ export default function PatientsPage() {
         full_name: form.full_name,
         language: form.language,
         country: form.country || undefined,
+        phone: form.phone || undefined,
+        email: form.email || undefined,
       }),
     onSuccess: async () => {
-      setForm({ full_name: "", language: "en", country: "" });
+      setForm({ full_name: "", language: "en", country: "", phone: "", email: "" });
       await queryClient.invalidateQueries({ queryKey: ["patients"] });
     },
     onError: (err) =>
@@ -95,6 +103,26 @@ export default function PatientsPage() {
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
               placeholder="Germany"
+            />
+          </div>
+          <div>
+            <Label htmlFor="phone">Telefon / WhatsApp (opsiyonel)</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="+90 555 123 45 67"
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">E-posta (opsiyonel)</Label>
+            <Input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="hasta@example.com"
             />
           </div>
 

@@ -32,6 +32,8 @@ export interface Patient {
   full_name: string;
   language: string;
   country: string | null;
+  phone: string | null;
+  email: string | null;
   access_token: string;
   notes: string | null;
   created_at: string;

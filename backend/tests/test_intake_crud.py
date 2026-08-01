@@ -76,20 +76,41 @@ async def test_self_service_intake_creates_patient(client: AsyncClient) -> None:
 
     start = await client.post(
         f"/api/v1/public/intake/{intake_token}",
-        json={"full_name": "Self Servis Hasta", "language": "en"},
+        json={
+            "full_name": "Self Servis Hasta",
+            "phone": "+90 555 123 45 67",
+            "email": "self@example.com",
+            "language": "en",
+        },
     )
     assert start.status_code == 201
     access_token = start.json()["access_token"]
     assert access_token
 
-    # Klinik, self-kaydolan hastayı panelinde görür
+    # Klinik, self-kaydolan hastayı iletişim bilgisiyle panelinde görür
     listing = await client.get("/api/v1/patients", headers=_headers(token))
-    assert any(p["full_name"] == "Self Servis Hasta" for p in listing.json())
+    created = next(
+        p for p in listing.json() if p["full_name"] == "Self Servis Hasta"
+    )
+    assert created["phone"] == "+90 555 123 45 67"
+    assert created["email"] == "self@example.com"
 
     # access_token ile chat oturumu açılabilir
     session = await client.get(f"/api/v1/public/chat/{access_token}")
     assert session.status_code == 200
     assert session.json()["patient_name"] == "Self Servis Hasta"
+
+
+async def test_intake_requires_phone(client: AsyncClient) -> None:
+    _, clinic = await _clinic(client, "crud4@gmail.com")
+    intake_token = clinic["intake_token"]
+
+    # Telefon zorunlu: eksikse 422 doğrulama hatası
+    response = await client.post(
+        f"/api/v1/public/intake/{intake_token}",
+        json={"full_name": "Telefonsuz Hasta", "language": "en"},
+    )
+    assert response.status_code == 422
 
 
 async def test_intake_invalid_token(client: AsyncClient) -> None:

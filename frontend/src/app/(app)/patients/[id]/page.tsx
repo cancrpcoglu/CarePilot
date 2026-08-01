@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AssessmentView } from "@/components/assessment";
+import { ContactActions } from "@/components/contact";
 import { QrCode } from "@/components/qr";
 import {
   Alert,
@@ -88,6 +89,8 @@ function PatientManageCard({ patient }: { patient: Patient }) {
     full_name: patient.full_name,
     language: patient.language,
     country: patient.country ?? "",
+    phone: patient.phone ?? "",
+    email: patient.email ?? "",
     notes: patient.notes ?? "",
   });
   const [saved, setSaved] = useState(false);
@@ -99,6 +102,8 @@ function PatientManageCard({ patient }: { patient: Patient }) {
         full_name: form.full_name,
         language: form.language,
         country: form.country || undefined,
+        phone: form.phone || undefined,
+        email: form.email || undefined,
         notes: form.notes,
       }),
     onSuccess: async () => {
@@ -150,6 +155,26 @@ function PatientManageCard({ patient }: { patient: Patient }) {
             id="edit_country"
             value={form.country}
             onChange={(e) => setForm({ ...form, country: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="edit_phone">Telefon / WhatsApp</Label>
+          <Input
+            id="edit_phone"
+            type="tel"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            placeholder="+90 555 123 45 67"
+          />
+        </div>
+        <div>
+          <Label htmlFor="edit_email">E-posta</Label>
+          <Input
+            id="edit_email"
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="hasta@example.com"
           />
         </div>
       </div>
@@ -309,8 +334,12 @@ export default function PatientDetailPage() {
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">{p.full_name}</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Dil: {p.language} · Ülke: {p.country ?? "—"}
+          Dil: {p.language} · Ülke: {p.country ?? "—"} · Telefon: {p.phone ?? "—"}
+          {p.email ? ` · ${p.email}` : ""}
         </p>
+        {(p.phone || p.email) && (
+          <ContactActions phone={p.phone} email={p.email} className="mt-3" />
+        )}
       </div>
 
       <PatientManageCard patient={p} />

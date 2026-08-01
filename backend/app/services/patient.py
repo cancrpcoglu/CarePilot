@@ -23,6 +23,8 @@ class PatientService:
             full_name=data.full_name,
             language=data.language,
             country=data.country,
+            phone=data.phone,
+            email=data.email,
         )
         patient = await self.patients.create(patient)
         await self.session.commit()

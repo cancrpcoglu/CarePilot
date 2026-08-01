@@ -18,6 +18,8 @@ type PatientUpdate = {
   full_name?: string;
   language?: string;
   country?: string;
+  phone?: string;
+  email?: string;
   notes?: string;
 };
 
@@ -104,8 +106,13 @@ export const api = {
 
   listPatients: () => request<Patient[]>("/api/v1/patients"),
 
-  createPatient: (data: { full_name: string; language?: string; country?: string }) =>
-    request<Patient>("/api/v1/patients", { method: "POST", body: data }),
+  createPatient: (data: {
+    full_name: string;
+    language?: string;
+    country?: string;
+    phone?: string;
+    email?: string;
+  }) => request<Patient>("/api/v1/patients", { method: "POST", body: data }),
 
   getPatient: (patientId: string) =>
     request<Patient>(`/api/v1/patients/${patientId}`),
@@ -176,10 +183,13 @@ export const api = {
   getIntakeInfo: (intakeToken: string) =>
     request<IntakeInfo>(`/api/v1/public/intake/${intakeToken}`, { auth: false }),
 
-  startIntake: (intakeToken: string, fullName: string, language?: string) =>
+  startIntake: (
+    intakeToken: string,
+    data: { full_name: string; phone: string; email?: string; language?: string },
+  ) =>
     request<IntakeStartResponse>(`/api/v1/public/intake/${intakeToken}`, {
       method: "POST",
-      body: { full_name: fullName, language },
+      body: data,
       auth: false,
     }),
 };

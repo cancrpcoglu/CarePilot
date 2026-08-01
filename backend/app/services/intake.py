@@ -33,12 +33,19 @@ class IntakeService:
         return await self._get_clinic(intake_token)
 
     async def start(
-        self, intake_token: str, full_name: str, language: str | None
+        self,
+        intake_token: str,
+        full_name: str,
+        phone: str,
+        email: str | None,
+        language: str | None,
     ) -> Patient:
         clinic = await self._get_clinic(intake_token)
         patient = Patient(
             clinic_id=clinic.id,
             full_name=full_name,
+            phone=phone,
+            email=email,
             language=language or "en",
         )
         self.session.add(patient)
