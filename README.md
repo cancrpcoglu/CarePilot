@@ -225,11 +225,38 @@ Yukarıdaki [Ekran Görüntüleri](#-ürün-durumu-ekran-görüntüleri) bölüm
 - **Geliştirilmesi gereken:** Railway ücretsiz trial'ı doldu ve canlı ortam düştü; hosting sürdürülebilir/ücretsiz bir platforma taşınmalı.
 - **Sonraki sprint için aksiyon:** Ücretsiz hosting'e göç (Neon Postgres + Render/Koyeb) veya Railway planı; ardından demo videosu ve son dokümantasyon.
 
-## 🔄 Sprint 3 — Planlanan (20 Temmuz – 2 Ağustos)
-- Ürünü tekrar canlıya alma (Railway trial bittiği için ücretsiz alternatife göç: Neon + Render/Koyeb)
-- Performans optimizasyonu ve son rötuşlar
-- 3 dakikalık demo videosu
-- Dokümantasyonun tamamlanması
+## 🔄 Sprint 3 — Tamamlandı (20 Temmuz – 2 Ağustos)
+
+### Sprint Notları
+Bu sprintte ürün **canlıya alınabilir** hale getirildi; dokümantasyon ve demo hazırlığı tamamlandı. Proje Sprint 1'de Railway'de canlıya alınmıştı (ekran görüntüleri mevcut); Railway ücretsiz trial'ı dolunca, **tamamen ücretsiz ve sürdürülebilir bir yığına** (Neon + Render, pgvector destekli) tek adımda deploy edilebilecek şekilde yapılandırıldı — bkz. [render.yaml](./render.yaml) ve [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+- **Sprint içinde tamamlanması tahmin edilen puan:** ~100
+- **Puan tamamlama mantığı:** Backlog'un son dilimi — canlıya alınabilirlik, performans gözden geçirme, demo ve dokümantasyon.
+
+### Daily Scrum
+Solo geliştirici; ilerleme conventional commit geçmişi ve sprint logları üzerinden takip edildi.
+
+### Sprint Board
+| ✅ Done | 📋 Kullanıcı adımı |
+|---|---|
+| Ücretsiz deploy config'i (Render Blueprint + Neon, pgvector) | Ücretsiz hesap açıp canlıya alma |
+| Deployment rehberi ([DEPLOYMENT.md](./DEPLOYMENT.md)) | Demo videosunun kaydı |
+| 3 dakikalık demo senaryosu ([DEMO_SCRIPT.md](./DEMO_SCRIPT.md)) | |
+| Performans gözden geçirme (async I/O, connection pooling, FK indeksleri, prod build) | |
+| Dokümantasyon (README, PRD, backlog, mimari + ER diyagramları) | |
+
+### Ürün Durumu
+Ürün Sprint 1'de Railway'de canlıydı (bkz. [Ekran Görüntüleri](#-ürün-durumu-ekran-görüntüleri)). Şu an tek rehberle ([DEPLOYMENT.md](./DEPLOYMENT.md)) tekrar canlıya alınabilir ve yerelde tam çalışır durumdadır.
+
+### Sprint Review
+**Ne çalışıyor:** Ürünün tamamı (klinik paneli + hasta chat + hafızalı AI agent + embedding arama) uçtan uca çalışıyor. Ücretsiz yığına deploy config'i ve rehberi hazır; jüri kriteri olan "canlıya alınmış **veya alınabilecek**" karşılanıyor. 34/34 test, ruff temiz, CI yeşil.
+
+**Sprint Review katılımcıları:** Can Çorapçıoğlu (geliştirici).
+
+### Sprint Retrospective
+- **İyi giden:** Platformdan bağımsız mimari sayesinde hosting geçişi kod değişikliği gerektirmedi (`config.py` DATABASE_URL'i otomatik normalize eder). Kapsamlı dokümantasyon ve demo hazırlığı yapıldı.
+- **Geliştirilmesi gereken:** Ücretsiz hosting'lerin uyku/kaynak sınırları demo öncesi "uyandırma" gerektiriyor.
+- **Sonuç:** Proje bootcamp teslimine hazır — çalışan, dokümante edilmiş, canlıya alınabilir bir ürün.
 
 ---
 

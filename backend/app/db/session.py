@@ -14,7 +14,10 @@ engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,
     future=True,
-    pool_pre_ping=True,
+    pool_pre_ping=True,  # bayat bağlantıları kullanmadan önce doğrula
+    pool_size=5,  # ücretsiz/serverless DB bağlantı limitini aşmamak için ölçülü havuz
+    max_overflow=5,
+    pool_recycle=300,  # 5 dk'da bir geri dönüştür (Neon boşta bağlantıyı kapatır)
 )
 
 AsyncSessionLocal = async_sessionmaker(
