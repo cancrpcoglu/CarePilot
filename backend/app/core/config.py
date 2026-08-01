@@ -37,15 +37,19 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL")
     @classmethod
     def _normalize_database_url(cls, value: str) -> str:
-        """Railway/Heroku tarzı postgres URL'lerini asyncpg sürücüsüne çevirir.
+        """Yönetilen Postgres URL'lerini asyncpg sürücüsüne uygun hale getirir.
 
-        Railway, DATABASE_URL'i `postgresql://...` formatında verir; uygulamamız
-        ve Alembic async erişim için `postgresql+asyncpg://...` ister.
+        Railway/Heroku, DATABASE_URL'i `postgresql://...` formatında verir;
+        uygulama ve Alembic async erişim için `postgresql+asyncpg://...` ister.
+        Ayrıca asyncpg, libpq'nun `sslmode` parametresini anlamaz; Neon gibi
+        SSL zorunlu sağlayıcılar için `sslmode=...` → `ssl=...`'e çevrilir.
         """
         if value.startswith("postgres://"):
-            return value.replace("postgres://", "postgresql+asyncpg://", 1)
-        if value.startswith("postgresql://"):
-            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+            value = value.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif value.startswith("postgresql://"):
+            value = value.replace("postgresql://", "postgresql+asyncpg://", 1)
+        # asyncpg 'sslmode' yerine 'ssl' bekler (ör. Neon: ?sslmode=require)
+        value = value.replace("sslmode=", "ssl=")
         return value
 
     @property
