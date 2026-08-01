@@ -81,6 +81,7 @@ async def test_self_service_intake_creates_patient(client: AsyncClient) -> None:
             "phone": "+90 555 123 45 67",
             "email": "self@example.com",
             "language": "en",
+            "consent": True,
         },
     )
     assert start.status_code == 201
@@ -94,6 +95,7 @@ async def test_self_service_intake_creates_patient(client: AsyncClient) -> None:
     )
     assert created["phone"] == "+90 555 123 45 67"
     assert created["email"] == "self@example.com"
+    assert created["consent_at"] is not None
 
     # access_token ile chat oturumu açılabilir
     session = await client.get(f"/api/v1/public/chat/{access_token}")
@@ -108,7 +110,23 @@ async def test_intake_requires_phone(client: AsyncClient) -> None:
     # Telefon zorunlu: eksikse 422 doğrulama hatası
     response = await client.post(
         f"/api/v1/public/intake/{intake_token}",
-        json={"full_name": "Telefonsuz Hasta", "language": "en"},
+        json={"full_name": "Telefonsuz Hasta", "language": "en", "consent": True},
+    )
+    assert response.status_code == 422
+
+
+async def test_intake_requires_consent(client: AsyncClient) -> None:
+    _, clinic = await _clinic(client, "crud5@gmail.com")
+    intake_token = clinic["intake_token"]
+
+    # KVKK açık rıza olmadan (consent=false) ön kayıt reddedilir
+    response = await client.post(
+        f"/api/v1/public/intake/{intake_token}",
+        json={
+            "full_name": "Rizasiz Hasta",
+            "phone": "+90 555 000 00 00",
+            "consent": False,
+        },
     )
     assert response.status_code == 422
 

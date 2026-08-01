@@ -15,6 +15,7 @@ export default function IntakePage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const info = useQuery({
@@ -29,6 +30,7 @@ export default function IntakePage() {
         full_name: name.trim(),
         phone: phone.trim(),
         email: email.trim() || undefined,
+        consent: true,
       }),
     onSuccess: (data) => router.replace(`/chat/${data.access_token}`),
     onError: (err) =>
@@ -84,6 +86,10 @@ export default function IntakePage() {
                 setError("Please enter a phone number where the clinic can reach you.");
                 return;
               }
+              if (!consent) {
+                setError("Please give your consent to continue.");
+                return;
+              }
               start.mutate();
             }}
           >
@@ -121,6 +127,20 @@ export default function IntakePage() {
                 placeholder="you@example.com"
               />
             </div>
+
+            <label className="flex items-start gap-2.5 text-xs text-slate-500">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-teal-600 focus:ring-teal-500/30"
+              />
+              <span>
+                I consent to my personal and health information being processed and
+                shared with the clinic for the purpose of a pre-assessment, in line
+                with applicable data protection law (KVKK).
+              </span>
+            </label>
 
             {error && <Alert message={error} />}
 

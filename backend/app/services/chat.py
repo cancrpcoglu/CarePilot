@@ -72,13 +72,16 @@ class PublicChatService:
 
     async def get_session(
         self, access_token: str
-    ) -> tuple[Patient, list[Message]]:
+    ) -> tuple[Patient, list[Message], bool]:
         patient = await self._get_patient(access_token)
         conversation = await self._find_conversation(patient.id)
-        messages = (
-            await self._load_messages(conversation.id) if conversation else []
-        )
-        return patient, messages
+        if conversation is None:
+            return patient, [], False
+        messages = await self._load_messages(conversation.id)
+        # Ön değerlendirme raporu üretildiyse sohbet tamamlanmış demektir
+        # (sayfa yeniden yüklendiğinde de tamamlanma durumu korunur).
+        report = await self._existing_report(patient.id, conversation.id)
+        return patient, messages, report is not None
 
     async def send_message(
         self, access_token: str, text: str

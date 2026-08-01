@@ -35,4 +35,5 @@ class PatientRead(PatientBase):
     user_id: uuid.UUID | None
     access_token: str
     notes: str | None
+    consent_at: datetime | None
     created_at: datetime

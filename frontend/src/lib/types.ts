@@ -36,6 +36,7 @@ export interface Patient {
   email: string | null;
   access_token: string;
   notes: string | null;
+  consent_at: string | null;
   created_at: string;
 }
 
@@ -103,6 +104,7 @@ export interface ChatMessage {
 export interface ChatSession {
   patient_name: string;
   language: string;
+  is_complete: boolean;
   messages: ChatMessage[];
 }
 

@@ -7,8 +7,9 @@ sonra kendi kullanıcı hesabıyla eşleştirilir.
 
 import secrets
 import uuid
+from datetime import datetime
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, SoftDeleteMixin, TimestampMixin, UUIDMixin
@@ -44,6 +45,10 @@ class Patient(Base, UUIDMixin, TimestampMixin, SoftDeleteMixin):
     )
     # Kliniğe özel serbest not (hasta göremez)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # KVKK açık rıza zaman damgası (hasta intake'te onay verdiğinde set edilir)
+    consent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     def __repr__(self) -> str:
         return f"<Patient {self.full_name}>"
