@@ -3,10 +3,12 @@
 import uuid
 
 from fastapi import status
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import AppException
 from app.models.clinic import Clinic
+from app.models.patient import Patient
 from app.models.user import User
 from app.repositories.clinic import ClinicRepository
 from app.schemas.clinic import ClinicCreate, ClinicUpdate
@@ -50,3 +52,21 @@ class ClinicService:
         await self.session.commit()
         await self.session.refresh(clinic)
         return clinic
+
+    async def delete(self, clinic_id: uuid.UUID, admin: User) -> None:
+        """Kliniği soft-delete eder; bağlı hastaları da soft-delete eder ve
+        yöneticinin klinik bağını koparır (yönetici tekrar onboarding'e döner,
+        dilerse yeni bir klinik oluşturabilir). Veri DB'de korunur.
+        """
+        clinic = await self.get(clinic_id)  # yoksa/ait değilse 404
+        clinic.is_deleted = True
+        # Kliniğe bağlı tüm hastaları da soft-delete et (listelerden kaybolur)
+        await self.session.execute(
+            update(Patient)
+            .where(Patient.clinic_id == clinic_id)
+            .values(is_deleted=True)
+        )
+        # Yöneticinin klinik bağını kopar
+        admin.clinic_id = None
+        self.session.add(admin)
+        await self.session.commit()
