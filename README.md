@@ -7,7 +7,9 @@
 [![Canlı Panel](https://img.shields.io/badge/Canl%C4%B1_Panel-Render-46E3B7?logo=render&logoColor=white)](https://carepilot-frontend.onrender.com)
 [![Canlı API](https://img.shields.io/badge/Canl%C4%B1_API-Render-46E3B7?logo=render&logoColor=white)](https://carepilot-backend-0xxe.onrender.com/api/v1/health)
 [![Swagger](https://img.shields.io/badge/API_Docs-Swagger-85EA2D?logo=swagger&logoColor=black)](https://carepilot-backend-0xxe.onrender.com/docs)
+[![Demo Videosu](https://img.shields.io/badge/Demo_Videosu-YouTube-FF0000?logo=youtube&logoColor=white)](https://youtu.be/iCj_6lvJ2_Q)
 
+- **🎬 3 dakikalık demo videosu:** https://youtu.be/iCj_6lvJ2_Q
 - **Canlı Panel:** https://carepilot-frontend.onrender.com
 - **Canlı API:** https://carepilot-backend-0xxe.onrender.com
 - **Etkileşimli API dokümantasyonu:** https://carepilot-backend-0xxe.onrender.com/docs
@@ -133,6 +135,10 @@ Backend, temiz mimari (clean architecture) ile katmanlıdır: **router → servi
 ---
 
 ## 🖼 Ürün Durumu (Ekran Görüntüleri)
+
+> 🌍 **Çok dilli kanıt — Arapça konuşan hasta ile canlı sohbet:** AI, hastanın dilini otomatik algılayıp uçtan uca Arapça görüşür, gerekli tüm bilgileri toplar ve klinik için yapılandırılmış rapor üretir. (Canlı ortamda gerçek bir konuşma.)
+
+![Arapça hasta sohbeti](docs/screenshots/17-patient-chat-arabic.png)
 
 | Açılış sayfası | Klinik paneli |
 |---|---|
